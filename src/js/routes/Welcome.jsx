@@ -502,8 +502,7 @@ export default class Intro extends Component {
               <Link to="/more/terms">Terms of Use</Link>
             </li>
             <li>
-              <OpenExternalWebSite url="https://help.wevote.us/hc/en-us/requests/new"
-                                   target="_blank"
+              <OpenExternalWebSite url="mailto:info@WeVoteEducation.org"
                                    body="Contact"
               />
             </li>
