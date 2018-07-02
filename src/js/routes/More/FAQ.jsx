@@ -34,8 +34,8 @@ export default class About extends Component {
             folks who share your values.<br />
           <br />
 
-          <strong>Who’s behind We Vote?</strong><br />
-            We Vote is a 501(c)(3) and 501(c)(4) nonprofit
+          <strong>Who’s behind WeVote.me?</strong><br />
+            We Vote is a 501(c)(3) nonprofit
             based in Oakland, CA.<br />
           <br />
 

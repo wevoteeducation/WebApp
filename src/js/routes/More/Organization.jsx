@@ -49,10 +49,8 @@ export default class Organization extends Component {
 
         <div className="Our-Story">
           <h3 className="h3">A Nonprofit Startup</h3>
-          We Vote is made of two nonpartisan nonprofit organizations (501(c)(3) and 501(c)(4)) based in
-          Oakland, California. Our
-          software is open source, and our work is driven by the nearly 100 volunteers who have contributed so far.
-          Inspired by groups like
+          We Vote is a nonpartisan nonprofit organization (501(c)(3) based in
+            Oakland, California. Inspired by groups like
           <OpenExternalWebSite url="http://codeforsanfrancisco.org/"
                                target="_blank"
                                body={<span>Code for America&nbsp;<i className="fa fa-external-link" /></span>} />
@@ -61,8 +59,8 @@ export default class Organization extends Component {
                                target="_blank"
                                className="open-web-site open-web-site__no-right-padding"
                                body={<span>Mozilla Foundation&nbsp;<i className="fa fa-external-link" /></span>} />
-          , we use technology to
-          make democracy stronger by increasing voter turnout.<br />
+          , we use free and open source software to
+          make democracy stronger by providing education about what is on your ballot.<br />
 
           <h3 className="h3">Our Story</h3>
           After meeting in Oakland in the spring of 2012, We Vote co-founders Dale McGrew, Jenifer Fernandez Ancona, Dan Ancona,

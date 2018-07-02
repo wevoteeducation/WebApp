@@ -28,7 +28,7 @@ export default class Team extends Component {
       <div className="container-fluid card u-inset__v--md">
         <section>
           <h1 className="h1">Our Team</h1>
-          <h3 className="h3">We Vote Board Members &amp; Advisers</h3>
+          <h3 className="h3">We Vote 501(c)(3) Board Members &amp; Advisers</h3>
           <div className="row">
             {
               weVoteBoard.map((item) => <div className="col-4 col-sm-3" key={item.name}>
@@ -69,12 +69,6 @@ export default class Team extends Component {
           <Link to="/more/credits">We are thankful for our volunteers, our board of directors, and the
             organizations</Link> that are critical to our work.<br />
           <br />
-          <h3 className="h3">
-            <OpenExternalWebSite url="https://help.wevote.us/hc/en-us/sections/115000140947-What-is-We-Vote-"
-                                 target="_blank"
-                                 className="open-web-site open-web-site__no-left-padding"
-                                 body={<span>Visit our help center to learn more about We Vote.&nbsp;<i className="fa fa-external-link"/></span>} />
-          </h3>
 
         </section>
       </div>

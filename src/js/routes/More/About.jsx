@@ -36,10 +36,8 @@ export default class About extends Component {
         <div className="our-story">
           <h3 className="h3">A Nonprofit Startup</h3>
           <p>
-            We Vote is made of two nonpartisan nonprofit organizations (501(c)(3) and 501(c)(4)) based in
-            Oakland, California. Our
-            software is open source, and our work is driven by the nearly 100 volunteers who have contributed so far.
-            Inspired by groups like
+            We Vote is a nonpartisan nonprofit organization (501(c)(3) based in
+            Oakland, California. Inspired by groups like
             <OpenExternalWebSite url="http://codeforsanfrancisco.org/"
                          target="_blank"
                          body={<span>Code for America&nbsp;<i className="fa fa-external-link" /></span>} />
@@ -48,13 +46,13 @@ export default class About extends Component {
                          target="_blank"
                          className="open-web-site open-web-site__no-right-padding"
                          body={<span>Mozilla Foundation&nbsp;<i className="fa fa-external-link" /></span>} />
-            , we use technology to
-          make democracy stronger by increasing voter turnout.
+            , we use free and open source software to
+          make democracy stronger by providing education about what is on your ballot.
         </p>
 
         <section>
           <h1 className="h1">Our Team</h1>
-          <h3 className="h3">We Vote Board Members &amp; Advisers</h3>
+          <h3 className="h3">We Vote 501(c)(3) Board Members &amp; Advisers</h3>
           <div className="row">
             {
               weVoteBoard.map((item) => <div className="col-4 col-sm-3" key={item.name}>
@@ -106,12 +104,6 @@ export default class About extends Component {
           <p>
             <Link to="/more/credits">We are thankful for our volunteers, our board of directors, and the organizations</Link> that are critical to our work.
           </p>
-          <h3 className="h3">
-            <OpenExternalWebSite url="https://help.wevote.us/hc/en-us/sections/115000140947-What-is-We-Vote-"
-                                 target="_blank"
-                                 className="open-web-site open-web-site__no-left-padding"
-                                 body={<span>Visit our help center to learn more about We Vote.&nbsp;<i className="fa fa-external-link"/></span>} />
-          </h3>
         </section>
 
         </div>

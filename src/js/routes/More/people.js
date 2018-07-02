@@ -6,10 +6,17 @@ if (window.cordova) {  // Static constants are initialized before the app starts
 const photoPath = webAppConfig.IS_CORDOVA ? "./img/global/photos/" : "../../../img/global/photos/";
 
 export const weVoteBoard = [ {
+    name: "Lawrence Grodeska",
+    image: photoPath + "Lawrence_Grodeska-200x200.jpg",
+    title: [
+      "c3 Board Chair",
+      "Civic Tech communications and innovation at CivicMakers. Formerly at Change.org."
+    ]
+  }, {
     name: "Jenifer Fernandez Ancona",
     image: photoPath + "Jenifer_Fernandez_Ancona-200x200.jpg",
     title: [
-      "Co-Founder & c4 Board Chair",
+      "Co-Founder",
       "VP, Strategy & Member Engagement at the Women Donors Network."
     ]
   }, {
@@ -27,32 +34,11 @@ export const weVoteBoard = [ {
       "Exec. Dir. of CTCL, software for election administrators. Former Voting Info Project Harvard Ash Center for Democratic Governance and Innovation."
     ]
   }, {
-    name: "Tory Gavito",
-    image: photoPath + "Tory_Gavito-200x200.jpg",
-    title: [
-      "c4 Board Member",
-      "Exec. Dir. at Texas Future Project."
-    ]
-  }, {
-    name: "Lawrence Grodeska",
-    image: photoPath + "Lawrence_Grodeska-200x200.jpg",
-    title: [
-      "c3 Board Chair",
-      "Civic Tech communications and innovation at CivicMakers. Formerly at Change.org."
-    ]
-  }, {
     name: "Dale John McGrew",
     image: photoPath + "Dale_McGrew-200x200.jpg",
     title: [
-      "Co-Founder / CTO & c3 + c4 Board Member",
+      "Co-Founder / CTO & c3 Board Member",
       "Managed large software projects for companies like Disney and over 60 nonprofits."
-    ]
-  }, {
-    name: "Alicia Kolar Prevost",
-    image: photoPath + "Alicia_Prevost-200x200.jpg",
-    title: [
-      "Senior Adviser",
-      "Led Defend Our Future (Environmental Defense Fund), mobilizing young people around climate action. PhD in political science, American University."
     ]
   }, {
     name: "Barbara Shannon",
@@ -62,13 +48,6 @@ export const weVoteBoard = [ {
       "Adviser to entrepreneurs and C-level Fortune 500 leaders. MBA The Wharton School."
     ]
   }, {
-    name: "Anat Shenker-Osorio",
-    image: photoPath + "Anat_Shenker_Osario-200x200.jpg",
-    title: [
-      "c4 Board Member",
-      "Communications expert, researcher and political pundit."
-    ]
-  }, {
     name: "Betsy Sikma",
     image: photoPath + "Betsy_Sikma-200x200.jpg",
     title: [
@@ -76,18 +55,11 @@ export const weVoteBoard = [ {
       ""
     ]
   }, {
-    name: "Billy Wimsatt",
-    image: photoPath + "Billy_Wimsatt-200x200.jpg",
+    name: "Alicia Kolar Prevost",
+    image: photoPath + "Alicia_Prevost-200x200.jpg",
     title: [
       "Senior Adviser",
-      "Author and political activist. Founder of Gamechanger Labs, the League of Young Voters & TheBallot.org."
-    ]
-  }, {
-    name: "William Winters",
-    image: photoPath + "William_Winters-200x200.jpg",
-    title: [
-      "c4 Board Member",
-      "Campaign Manager. Courage Campaign, Color Of Change, CEL & Change.org."
+      "Led Defend Our Future (Environmental Defense Fund), mobilizing young people around climate action. PhD in political science, American University."
     ]
   }
 ];
@@ -97,30 +69,6 @@ export const weVoteStaff = [ {
     image: photoPath + "Dale_McGrew-200x200.jpg",
     title: [
       "Executive Director / Co-Founder / CTO"
-    ]
-  }, {
-    name: "Rohan Bhambhoria",
-    image: photoPath + "Rohan_Bhambhoria-200x200.jpg",
-    title: [
-      "Engineering Intern"
-    ]
-  }, {
-    name: "Yuanhsin Chang",
-    image: photoPath + "Yuanhsin_Chang-200x200.jpg",
-    title: [
-      "User Experience Design Intern"
-    ]
-  }, {
-    name: "Sarah Clements",
-    image: photoPath + "Sarah_Clements-200x200.jpg",
-    title: [
-      "Engineering Intern"
-    ]
-  }, {
-    name: "Mansi Desai",
-    image: photoPath + "Mansi_Desai-200x200.jpg",
-    title: [
-      "Digital Marketing Intern"
     ]
   }, {
     name: "Neil Dullaghan",
@@ -141,34 +89,10 @@ export const weVoteStaff = [ {
       "Lead Designer"
     ]
   }, {
-    name: "Anisha Jain",
-    image: photoPath + "Anisha_Jain-200x200.jpg",
-    title: [
-      "Sr. Software Engineer"
-    ]
-  }, {
-    name: "Elizabeth Janeczko",
-    image: photoPath + "Elizabeth_Janeczko-200x200.jpg",
-    title: [
-      "Sr. Writer & Content Marketing Manager"
-    ]
-  }, {
     name: "Judy Johnson",
     image: photoPath + "Judy_Johnson-200x200.jpg",
     title: [
       "Operations"
-    ]
-  }, {
-    name: "Neelam Joshi",
-    image: photoPath + "Neelam_Joshi-200x200.jpg",
-    title: [
-      "Sr. Software Engineer"
-    ]
-  }, {
-    name: "Ciero Kilpatrick",
-    image: photoPath + "Ciero_Kilpatrick-200x200.jpg",
-    title: [
-      "User Experience Design Intern"
     ]
   }, {
     name: "Michael Kushman",
@@ -183,22 +107,10 @@ export const weVoteStaff = [ {
       "Engineering Intern"
     ]
   }, {
-    name: "Eric Ogawa",
-    image: photoPath + "Eric_Ogawa-200x200.jpg",
-    title: [
-      "User Experience Design Intern"
-    ]
-  }, {
     name: "Steve Podell",
     image: photoPath + "Steve_Podell-200x200.jpg",
     title: [
       "Volunteer"
-    ]
-  }, {
-    name: "Bharath Reddy",
-    image: photoPath + "Bharath_Reddy-200x200.jpg",
-    title: [
-      "Software Engineer"
     ]
   }
 ];
@@ -258,8 +170,8 @@ export const organizationalDonors = [ {
     name: "Voting Information Project, Pew Charitable Trusts",
     title: "Data",
   }, {
-    name: "We Vote Education",
-    title: "Data",
+    name: "We Vote USA",
+    title: "Software",
   }, {
     name: "Wikipedia",
     title: "Data",

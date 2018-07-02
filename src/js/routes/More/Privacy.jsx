@@ -17,19 +17,19 @@ export default class Privacy extends React.Component {
     return <div>
       <Helmet title="Privacy Policy - We Vote" />
       <div className="container-fluid well">
-        <h1 className="text-center">WeVote.US Privacy Policy</h1>
-        <p><strong>Last updated: December 26, 2016</strong></p>
-        <p><span>We Vote USA has created this privacy policy to explain how We Vote (or “we”) uses information that we collect from you while you visit the We Vote websites, currently located at</span>
+        <h1 className="text-center">WeVote.me Privacy Policy</h1>
+        <p><strong>Last updated: July 2, 2018</strong></p>
+        <p><span>We Vote has created this privacy policy to explain how We Vote (or “we”) uses information that we collect from you while you visit the We Vote websites, currently located at</span>
         <span>
-          <OpenExternalWebSite url="http://WeVote.US/"
+          <OpenExternalWebSite url="http://WeVote.me/"
                              target="_blank"
-                             body={<span>WeVote.US</span>} />
+                             body={<span>WeVote.me</span>} />
           (the “Site”), or while you use a portion of We Vote that is embedded on another website (the “Services”).  We Vote may modify this policy from time to time, so we encourage you to check this page when revisiting the Site.  The date of the most recent revision is listed below.
         </span>
         </p>
         <h2><b>How we use your information</b></h2>
         <p><span>When you request your ballot, send messages to friends, donate, join our newsletter, or take any other action on this Site, we may ask you to give us contact information, including your name, address, email address and telephone number. We may also obtain information about you from outside sources and combine it with the information we collect through this Site. We use this information to operate this Site, to sends you news and information about We Vote, to measure the effectiveness of our programs, and to send you timely election reminders.
-          You may opt-out of receiving messages from We Vote by sending any email to <a href="mailto:info@WeVote.US" target="_blank">info@WeVote.US</a> and asking that you not receive future email messages.  You may also opt-out by following the unsubscribe link at the bottom of each email.</span>
+          You may opt-out of receiving messages from We Vote by sending any email to <a href="mailto:info@WeVote.me" target="_blank">info@WeVote.me</a> and asking that you not receive future email messages.  You may also opt-out by following the unsubscribe link at the bottom of each email.</span>
         </p>
         <p><span>Some information on our mailing lists, such as names, email addresses, and addresses, may be exchanged with named partners and other organizations with principles and/or missions that overlap with those of We Vote. Subscribers may opt out of such mailing list exchanges at any time. Our purpose is to protect your information while making sure you have what you need to make an informed decision on Election Day.</span>
         </p>
@@ -62,10 +62,10 @@ export default class Privacy extends React.Component {
         <p><span>By using and/or visiting our Site, you understand and  agree to be bound by this Privacy Policy.  If you do not agree to this Privacy Policy, please do not use the Site or the Services.</span>
         </p>
         <h2><b>How to contact us</b></h2>
-        <p><span>If you have any questions about this Privacy Policy, you may contact us by sending an e-mail to <a href="mailto:info@WeVote.US" target="_blank">info@WeVote.US</a> </span><br />
+        <p><span>If you have any questions about this Privacy Policy, you may contact us by sending an e-mail to <a href="mailto:info@WeVote.me" target="_blank">info@WeVote.me</a> </span><br />
           <span>You can also write to us at the following address:</span>
         </p>
-        <p>We Vote USA
+        <p>We Vote Education
           <br /> 1717 Clemens Rd
           <br /> Oakland, CA 94602
           <br /> Attn: Privacy Policy

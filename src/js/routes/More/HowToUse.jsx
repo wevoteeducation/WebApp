@@ -73,9 +73,9 @@ export default class HowToUse extends Component {
           </span> :
           <span>
             If you like We Vote, please go to our website and
-            <OpenExternalWebSite url="http://wevote.us/donate"
+            <OpenExternalWebSite url="http://WeVote.me/donate"
                                  target="_blank"
-                                 body={<span>WeVote.US/donate</span>} />
+                                 body={<span>WeVote.me/donate</span>} />
 
             <strong>give what you can</strong> to help us reach more voters.
             Since we are a nonprofit, your donations make our work possible! Thank you.<br />

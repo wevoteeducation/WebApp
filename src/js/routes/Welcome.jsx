@@ -157,7 +157,7 @@ export default class Intro extends Component {
       method: "share",
       mobile_iframe: true,
       href: webAppConfig.WE_VOTE_HOSTNAME,
-      quote: "I am getting ready to vote at We Vote. Join me! https://WeVote.US #Vote #WeVote",
+      quote: "I am getting ready to vote at We Vote. Join me! https://WeVote.me #Vote #WeVote",
     }, function (response) {
       if (response === undefined || response.error_code === 4201) {
         console.log("Voter Canceled the share request");
@@ -171,7 +171,7 @@ export default class Intro extends Component {
     renderLog(__filename);
     let actualFullName = "";
     let isVoterSignedIn = false;
-    let mailToUrl = "mailto:" + "?subject=Check out We Vote" + "&body=I am using We Vote to discuss what is on my ballot. You can see it at https://WeVote.US too.";
+    let mailToUrl = "mailto:" + "?subject=Check out We Vote" + "&body=I am using We Vote to discuss what is on my ballot. You can see it at https://WeVote.me too.";
     if (this.state.voter) {
       isVoterSignedIn = this.state.voter.is_signed_in;
       if (this.state.voter.first_name || this.state.voter.last_name) {
@@ -187,7 +187,7 @@ export default class Intro extends Component {
       pleaseShareString = "Please share to help us reach more voters.";
     }
 
-    let ballotBaseUrl = "https://WeVote.US/welcome";
+    let ballotBaseUrl = "https://WeVote.me/welcome";
     let encodedMessage = encodeURIComponent("I am getting ready to vote @WeVote. Join me!");
     let twitterIntent = "https://twitter.com/intent/tweet?url=" + encodeURIComponent(ballotBaseUrl) + "&text=" + encodedMessage + "&hashtags=Voting,WeVote";
 
@@ -475,20 +475,14 @@ export default class Intro extends Component {
                 <li className="u-push--md u-stack--sm">
                   <Link to={"/more/elections"}>Supported Elections</Link>
                 </li>
-                <li className="u-push--md u-stack--sm">
-                  <OpenExternalWebSite url="https://blog.wevote.us/"
-                                       target="_blank"
-                                       body="We Vote Blog"
-                  />
-                </li>
               </ul>
             </span>
           }
 
           <div className="u-f--small u-stack--lg">
             <p>
-              WeVote.US is brought to you by a partnership between two registered nonprofit organizations,
-               one <span className="u-no-break">501(c)(3)</span> and one <span className="u-no-break">501(c)(4)</span>.
+              WeVote.me is brought to you by a registered <span className="u-no-break">501(c)(3)</span> nonprofit
+              organization.
                <br />
                We do not support or oppose any political candidate or party.
             </p>

@@ -115,7 +115,7 @@ export default class CodeCopier extends Component {
     if (this.props.sourceUrl && this.props.sourceUrl.length) {
       source_url = this.props.sourceUrl;
     } else {
-      source_url = "https://wevote.us/" + this.state.twitter_handle;
+      source_url = "https://wevote.me/" + this.state.twitter_handle;
     }
 
     let source_code =
