@@ -82,13 +82,6 @@ export default class HowToUse extends Component {
           </span>
         }
 
-        <h3 className="h3">
-           <OpenExternalWebSite url="https://help.wevote.us/hc/en-us/categories/115000098688-Using-We-Vote"
-                               target="_blank"
-                               className="open-web-site open-web-site__no-left-padding"
-                               body={<span>Visit our help center for answers to common questions.&nbsp;<i className="fa fa-external-link"/></span>}
-           />
-        </h3>
         <span className="terms-and-privacy">
           <br />
           <Link to="/more/terms">Terms of Service</Link>&nbsp;&nbsp;&nbsp;<Link to="/more/privacy">Privacy Policy</Link>
