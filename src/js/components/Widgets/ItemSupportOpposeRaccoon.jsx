@@ -31,6 +31,7 @@ export default class ItemSupportOpposeRaccoon extends Component {
     organizationsToFollowOppose: PropTypes.array,
     popoverBottom: PropTypes.bool,
     positionBarIsClickable: PropTypes.bool,
+    showIssueList: PropTypes.bool,
     showPositionStatementActionBar: PropTypes.bool,
     supportProps: PropTypes.object,
     urlWithoutHash: PropTypes.string,
@@ -697,74 +698,18 @@ export default class ItemSupportOpposeRaccoon extends Component {
       </OverlayTrigger>;
 
     return <div className="network-positions-stacked">
-      <div className="network-positions-stacked__support">
-        {/* Support toggle here */}
-        {item_action_bar}
-
-        {/* Issue Score here */}
-        { showIssueScore ?
-          <OverlayTrigger trigger="click"
-                          ref="issue-score-overlay"
-                          onExit={this.closeIssueScorePopover}
-                          rootClose
-                          placement={issuesPopoverPlacement}
-                          overlay={scoreFromYourIssuesPopover}>
-            <span className={ showNetworkScore ?
-                              "network-positions-stacked__support-score u-cursor--pointer u-no-break hidden-xs" :
-                              "network-positions-stacked__support-score u-cursor--pointer u-no-break" }>
-              { voterIssuesScore === 0 ?
-                <span className="u-margin-left--md">{ voterIssuesScoreWithSign }&nbsp;</span> :
-                <span className="u-margin-left--xs">{ voterIssuesScoreWithSign }&nbsp;</span>
-              }
-              <span className="network-positions-stacked__support-score-label">
-                <span>Issue<br />Score</span>
-                <span>&nbsp;<i className="fa fa-info-circle fa-md network-positions-stacked__info-icon-for-popover hidden-print" aria-hidden="true" />&nbsp;</span>
-              </span>
-            </span>
-          </OverlayTrigger> :
-          null
-        }
-
-        {/* Network Score here */}
-        { showNetworkScore ?
-          <OverlayTrigger trigger="click"
-                          ref="network-score-overlay"
-                          onExit={this.closeNetworkScorePopover}
-                          rootClose
-                          placement={this.props.popoverBottom ? "bottom" : "top"}
-                          overlay={scoreInYourNetworkPopover}>
-            <span className="network-positions-stacked__support-score u-cursor--pointer u-no-break">
-              { total_network_score === 0 ?
-                <span className="u-margin-left--md">{ total_network_score_with_sign }&nbsp;</span> :
-                <span className="u-margin-left--xs">{ total_network_score_with_sign }&nbsp;</span>
-              }
-              <span className="network-positions-stacked__support-score-label">
-                <span className="visible-xs">Network<br />
-                  Score <i className="fa fa-info-circle fa-md network-positions-stacked__info-icon-for-popover hidden-print" aria-hidden="true" /></span>
-                <span className="hidden-xs">Score in<br />
-                  Your Network <i className="fa fa-info-circle fa-md network-positions-stacked__info-icon-for-popover hidden-print" aria-hidden="true" /></span>
-              </span>
-            </span>
-          </OverlayTrigger> :
-          null
-        }
-        <span className="sr-only">
-          {total_network_score > 0 ? total_network_score + " Support" : null }
-          {total_network_score < 0 ? total_network_score + " Oppose" : null }
-        </span>
-      </div>
-      { comment_display_raccoon_desktop }
-      { comment_display_raccoon_mobile }
-
       {/* Issues that have a score related to this ballot item */}
-      <IssuesFollowedByBallotItemDisplayList ballot_item_display_name={this.state.ballot_item_display_name}
-                                             ballotItemWeVoteId={this.props.ballotItemWeVoteId}
-                                             currentBallotIdInUrl={this.props.currentBallotIdInUrl}
-                                             overlayTriggerOnClickOnly
-                                             placement={this.props.popoverBottom ? "bottom" : "top"}
-                                             urlWithoutHash={this.props.urlWithoutHash}
-                                             we_vote_id={this.props.we_vote_id}
-      />
+      { this.props.showIssueList ?
+        <IssuesFollowedByBallotItemDisplayList ballot_item_display_name={this.state.ballot_item_display_name}
+                                               ballotItemWeVoteId={this.props.ballotItemWeVoteId}
+                                               currentBallotIdInUrl={this.props.currentBallotIdInUrl}
+                                               overlayTriggerOnClickOnly
+                                               placement={this.props.popoverBottom ? "bottom" : "top"}
+                                               urlWithoutHash={this.props.urlWithoutHash}
+                                               we_vote_id={this.props.we_vote_id}
+        /> :
+        null
+      }
 
       { positions_count ?
         <div className="network-positions-stacked__support-list u-flex u-justify-between u-items-center">
@@ -856,6 +801,65 @@ export default class ItemSupportOpposeRaccoon extends Component {
         </div> :
         null
       }
+
+      <div className="network-positions-stacked__support">
+        {/* Support toggle here */}
+        {item_action_bar}
+
+        {/* Issue Score here */}
+        { showIssueScore ?
+          <OverlayTrigger trigger="click"
+                          ref="issue-score-overlay"
+                          onExit={this.closeIssueScorePopover}
+                          rootClose
+                          placement={issuesPopoverPlacement}
+                          overlay={scoreFromYourIssuesPopover}>
+            <span className={ showNetworkScore ?
+                              "network-positions-stacked__support-score u-cursor--pointer u-no-break hidden-xs" :
+                              "network-positions-stacked__support-score u-cursor--pointer u-no-break" }>
+              { voterIssuesScore === 0 ?
+                <span className="u-margin-left--md">{ voterIssuesScoreWithSign }&nbsp;</span> :
+                <span className="u-margin-left--xs">{ voterIssuesScoreWithSign }&nbsp;</span>
+              }
+              <span className="network-positions-stacked__support-score-label">
+                <span>Issue<br />Score</span>
+                <span>&nbsp;<i className="fa fa-info-circle fa-md network-positions-stacked__info-icon-for-popover hidden-print" aria-hidden="true" />&nbsp;</span>
+              </span>
+            </span>
+          </OverlayTrigger> :
+          null
+        }
+
+        {/* Network Score here */}
+        { showNetworkScore ?
+          <OverlayTrigger trigger="click"
+                          ref="network-score-overlay"
+                          onExit={this.closeNetworkScorePopover}
+                          rootClose
+                          placement={this.props.popoverBottom ? "bottom" : "top"}
+                          overlay={scoreInYourNetworkPopover}>
+            <span className="network-positions-stacked__support-score u-cursor--pointer u-no-break">
+              { total_network_score === 0 ?
+                <span className="u-margin-left--md">{ total_network_score_with_sign }&nbsp;</span> :
+                <span className="u-margin-left--xs">{ total_network_score_with_sign }&nbsp;</span>
+              }
+              <span className="network-positions-stacked__support-score-label">
+                <span className="visible-xs">Network<br />
+                  Score <i className="fa fa-info-circle fa-md network-positions-stacked__info-icon-for-popover hidden-print" aria-hidden="true" /></span>
+                <span className="hidden-xs">Score in<br />
+                  Your Network <i className="fa fa-info-circle fa-md network-positions-stacked__info-icon-for-popover hidden-print" aria-hidden="true" /></span>
+              </span>
+            </span>
+          </OverlayTrigger> :
+          null
+        }
+        <span className="sr-only">
+          {total_network_score > 0 ? total_network_score + " Support" : null }
+          {total_network_score < 0 ? total_network_score + " Oppose" : null }
+        </span>
+      </div>
+      { comment_display_raccoon_desktop }
+      { comment_display_raccoon_mobile }
     </div>;
   }
 }

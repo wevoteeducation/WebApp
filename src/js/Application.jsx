@@ -31,7 +31,7 @@ const loadingScreenStyles = {
   display: "flex",
   top: 0,
   left: 0,
-  backgroundColor: "#337ec9",
+  backgroundColor: "#25536D",
   justifyContent: "center",
   alignItems: "center",
   fontSize: "30px",
@@ -180,6 +180,9 @@ export default class Application extends Component {
         });
       }
     }
+
+    // console.log("Application _onVoterStoreChange voter: ", VoterStore.getVoter());
+    // console.log("SignedIn Voter in Application _onVoterStoreChange voter: ", VoterStore.getVoter().full_name);
   }
 
   incomingVariableManagement () {

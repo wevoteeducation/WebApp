@@ -6,10 +6,9 @@ import { cordovaDot, historyPush } from "../../utils/cordovaUtils";
 import TextTruncate from "react-text-truncate";
 import { toTitleCase } from "../../utils/textFormat";
 import BookmarkToggle from "../Bookmarks/BookmarkToggle";
-import CandidateActions from "../../actions/CandidateActions";
 import CandidateStore from "../../stores/CandidateStore";
 import ImageHandler from "../ImageHandler";
-import IssuesFollowedByBallotItemDisplayList from "../Issues/IssuesFollowedByBallotItemDisplayList";
+// import IssuesFollowedByBallotItemDisplayList from "../Issues/IssuesFollowedByBallotItemDisplayList";
 import IssueStore from "../../stores/IssueStore";
 import ItemSupportOpposeRaccoon from "../Widgets/ItemSupportOpposeRaccoon";
 import LearnMore from "../Widgets/LearnMore";
@@ -79,10 +78,11 @@ export default class OfficeItemCompressedRaccoon extends Component {
 
     if (this.props.we_vote_id) {
       // console.log("OfficeItemCompressedRaccoon componentDidMount getNumberOfCandidatesRetrievedByOffice:", CandidateStore.getNumberOfCandidatesRetrievedByOffice(this.props.we_vote_id));
-      if (CandidateStore.getNumberOfCandidatesRetrievedByOffice(this.props.we_vote_id) === 0) {
-        // console.log("Calling candidatesRetrieve: ", this.props.we_vote_id);
-        CandidateActions.candidatesRetrieve(this.props.we_vote_id);
-      }
+      // DALE 2018-07-31 We now retrieve the full candidate data in voterBallotItemsRetrieve
+      // if (CandidateStore.getNumberOfCandidatesRetrievedByOffice(this.props.we_vote_id) === 0) {
+      //   // console.log("Calling candidatesRetrieve: ", this.props.we_vote_id);
+      //   CandidateActions.candidatesRetrieve(this.props.we_vote_id);
+      // }
     }
 
     // If there three or fewer offices on this ballot, unfurl them
@@ -378,10 +378,7 @@ export default class OfficeItemCompressedRaccoon extends Component {
           <BookmarkToggle we_vote_id={we_vote_id} type="OFFICE" />
           <span className="hidden-print pull-right u-push--lg">
             { this.state.display_office_unfurled ?
-              <Link onClick={this.toggleExpandDetails}>
-                <span className="BallotItem__view-more u-items-center u-no-break hidden-print">
-                  show less</span>
-              </Link> :
+              null :
               <Link onClick={this.toggleExpandDetails}>
                 <span className="BallotItem__view-more u-items-center u-no-break hidden-print">
                   show more
@@ -422,6 +419,8 @@ export default class OfficeItemCompressedRaccoon extends Component {
             let candidate_party_text = one_candidate.party && one_candidate.party.length ? one_candidate.party + ". " : "";
             let candidate_twitter_description_text = one_candidate.twitter_description && one_candidate.twitter_description.length ? one_candidate.twitter_description : "";
             let ballotpediaCandidateSummary = one_candidate.ballotpedia_candidate_summary && one_candidate.ballotpedia_candidate_summary.length ? " " + one_candidate.ballotpedia_candidate_summary : "";
+            // Strip away any HTML tags
+            ballotpediaCandidateSummary = ballotpediaCandidateSummary.split(/<[^<>]*>/).join("");
             let candidate_text = candidate_party_text + candidate_twitter_description_text + ballotpediaCandidateSummary;
 
             let positions_display_raccoon = <div>
@@ -490,7 +489,7 @@ export default class OfficeItemCompressedRaccoon extends Component {
         ************************* */}
         { !this.state.display_office_unfurled ?
           <div>
-            <span className="hidden-print">
+            {/* <span className="hidden-print">
               <IssuesFollowedByBallotItemDisplayList ballot_item_display_name={this.props.ballot_item_display_name}
                                                      ballotItemWeVoteId={this.props.we_vote_id}
                                                      overlayTriggerOnClickOnly
@@ -498,7 +497,7 @@ export default class OfficeItemCompressedRaccoon extends Component {
                                                      urlWithoutHash={this.props.urlWithoutHash}
                                                      currentBallotIdInUrl={this.props.currentBallotIdInUrl}
                                                      we_vote_id={this.props.we_vote_id} />
-            </span>
+            </span> */}
             { this.state.candidateList.map( (one_candidate) => {
 
               if (!one_candidate || !one_candidate.we_vote_id) { return null; }
@@ -625,7 +624,7 @@ export default class OfficeItemCompressedRaccoon extends Component {
                                   rootClose
                                   placement="top"
                                   overlay={yourNetworkIsUndecidedPopover}>
-                      <span className=" u-cursor--pointer">Your network is undecided</span>
+                      <span className=" u-cursor--pointer">Your network is undecided <i className="fa fa-info-circle fa-md network-positions-stacked__info-icon-for-popover hidden-print" aria-hidden="true" /></span>
                     </OverlayTrigger>
                   </div>
                 }

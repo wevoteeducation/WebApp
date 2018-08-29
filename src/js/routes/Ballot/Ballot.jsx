@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
+// import { Button } from "react-bootstrap";
 import { Link } from "react-router";
 import AddressBox from "../../components/AddressBox";
 import AnalyticsActions from "../../actions/AnalyticsActions";
@@ -93,8 +93,10 @@ export default class Ballot extends Component {
     let hide_intro_modal_from_cookie = cookies.getItem("hide_intro_modal") || 0;
     let wait_until_voter_sign_in_completes = this.props.location.query ? this.props.location.query.wait_until_voter_sign_in_completes : 0;
     let issues_voter_can_follow = IssueStore.getIssuesVoterCanFollow(); // Check to see if the issues have been retrieved yet
+    let issues_voter_can_follow_exist = issues_voter_can_follow && issues_voter_can_follow.length;
+    // console.log("Ballot componentDidMount issues_voter_can_follow_exist: ", issues_voter_can_follow_exist);
 
-    if (wait_until_voter_sign_in_completes !== undefined || hide_intro_modal_from_cookie || hide_intro_modal_from_url || !issues_voter_can_follow) {
+    if (wait_until_voter_sign_in_completes !== undefined || hide_intro_modal_from_cookie || hide_intro_modal_from_url || !issues_voter_can_follow_exist) {
       this.setState({
         mounted: true,
         showBallotIntroModal: false,
@@ -218,6 +220,7 @@ export default class Ballot extends Component {
     this.electionListListener = ElectionStore.addListener(this.onElectionStoreChange.bind(this));
     ElectionActions.electionsRetrieve();
     OrganizationActions.organizationsFollowedRetrieve();
+    VoterActions.voterRetrieve();  // This is needed to update the interface status settings
 
     if (google_civic_election_id && google_civic_election_id !== 0) {
       AnalyticsActions.saveActionBallotVisit(google_civic_election_id);
@@ -379,7 +382,11 @@ export default class Ballot extends Component {
         }
       }
 
-      if (this.state.hide_intro_modal_from_cookie || this.state.hide_intro_modal_from_url) {
+      let issues_voter_can_follow = IssueStore.getIssuesVoterCanFollow(); // Check to see if the issues have been retrieved yet
+      let issues_voter_can_follow_exist = issues_voter_can_follow && issues_voter_can_follow.length;
+      // console.log("Ballot onVoterStoreChange issues_voter_can_follow_exist: ", issues_voter_can_follow_exist);
+
+      if (this.state.hide_intro_modal_from_cookie || this.state.hide_intro_modal_from_url || !issues_voter_can_follow_exist) {
         consider_opening_ballot_intro_modal = false;
       }
 
@@ -567,10 +574,12 @@ export default class Ballot extends Component {
 
     let text_for_map_search = VoterStore.getTextForMapSearch();
     let issues_voter_can_follow = IssueStore.getIssuesVoterCanFollow(); // Don't auto-open intro until Issues are loaded
+    let issues_voter_can_follow_exist = issues_voter_can_follow && issues_voter_can_follow.length;
+    // console.log("Ballot render issues_voter_can_follow_exist: ", issues_voter_can_follow_exist);
 
     if (!this.state.ballotWithAllItemsByFilterType) {
       return <div className="ballot container-fluid well u-stack--md u-inset--md">
-        { this.state.showBallotIntroModal && issues_voter_can_follow.length !== 0 ?
+        { this.state.showBallotIntroModal && issues_voter_can_follow_exist ?
           <BallotIntroModal show={this.state.showBallotIntroModal} toggleFunction={this.toggleBallotIntroModal} /> : null }
         <div className={ isWebApp() ? "ballot__header" : "ballot__header ballot__header__top-cordova"} >
           <BrowserPushMessage incomingProps={this.props} />
@@ -578,23 +587,25 @@ export default class Ballot extends Component {
             If your ballot does not appear momentarily, please <Link to="/settings/location">change your address</Link>.
           </p>
         </div>
-        <BallotElectionList ballotElectionList={this.state.voter_ballot_list} ballotBaseUrl="/ballot" />
+        <BallotElectionList ballotElectionList={this.state.voter_ballot_list}
+                            ballotBaseUrl="/ballot"
+                            showRelevantElections />
       </div>;
     }
 
     const missing_address = this.state.location === null;
 
     // const ballot_caveat = BallotStore.ballot_properties.ballot_caveat; // ballot_properties might be undefined
-    const election_name = BallotStore.currentBallotElectionName;
-    const election_day_text = BallotStore.currentBallotElectionDate;
+    const electionName = BallotStore.currentBallotElectionName;
+    const electionDayText = BallotStore.currentBallotElectionDate;
     const polling_location_we_vote_id_source = BallotStore.currentBallotPollingLocationSource;
     let ballot_returned_admin_edit_url = webAppConfig.WE_VOTE_SERVER_ROOT_URL + "b/" + polling_location_we_vote_id_source + "/list_edit_by_polling_location/?google_civic_election_id=" + VoterStore.election_id() + "&state_code=";
 
     const emptyBallotButton = this.state.filter_type !== "none" && !missing_address ?
         <span>
-          <Link to="/ballot">
+          {/* <Link to="/ballot">
               <Button bsStyle="primary">View Full Ballot</Button>
-          </Link>
+          </Link> */}
         </span> :
         <div className="container-fluid well u-stack--md u-inset--md">
           <Helmet title="Enter Your Address - We Vote" />
@@ -617,7 +628,7 @@ export default class Ballot extends Component {
      </div> :
       null;
 
-    const electionTooltip = election_day_text ? <Tooltip id="tooltip">Election day {moment(election_day_text).format("MMM Do, YYYY")}</Tooltip> : <span />;
+    const electionDayTextFormatted = electionDayText ? <span>{moment(electionDayText).format("MMM Do, YYYY")}</span> : <span />;
 
     let in_remaining_decisions_mode = this.state.filter_type === "filterRemaining";
     let in_ready_to_vote_mode = this.state.filter_type === "filterReadyToVote";
@@ -645,7 +656,13 @@ export default class Ballot extends Component {
     }
 
     if (BallotStore.ballot_properties && BallotStore.ballot_properties.substituted_address_nearby) {
-      substituted_address_nearby = BallotStore.ballot_properties.substituted_address_nearby;
+      if (BallotStore.ballot_properties.substituted_address_city && BallotStore.ballot_properties.substituted_address_state && BallotStore.ballot_properties.substituted_address_zip) {
+        substituted_address_nearby = BallotStore.ballot_properties.substituted_address_city + ", ";
+        substituted_address_nearby += BallotStore.ballot_properties.substituted_address_state + " ";
+        substituted_address_nearby += BallotStore.ballot_properties.substituted_address_zip;
+      } else {
+        substituted_address_nearby = BallotStore.ballot_properties.substituted_address_nearby;
+      }
     } else if (voter_ballot_location && voter_ballot_location.text_for_map_search) {
       // Get the location from the VoterStore address object
       substituted_address_nearby = voter_ballot_location.text_for_map_search;
@@ -673,11 +690,14 @@ export default class Ballot extends Component {
                 <BrowserPushMessage incomingProps={this.props} />
                 <header className="ballot__header__group">
                   <h1 className="h1 ballot__header__title">
-                    { election_name ?
-                      <OverlayTrigger placement="top" overlay={electionTooltip} >
-                       <span className="u-push--sm">{election_name}</span>
-                      </OverlayTrigger> :
-                      null }
+                    { electionName ?
+                       <span className="u-push--sm">
+                         {electionName} <span className="hidden-xs">&mdash; </span>
+                         <span className="u-gray-mid u-no-break">{electionDayTextFormatted}</span>
+                       </span> :
+                       <span className="u-push--sm">
+                         Loading Election...
+                       </span> }
                     {/* We always show the change election option */}
                     <span className="u-no-break hidden-print u-cursor--pointer"
                           onClick={this.toggleSelectBallotModal} >

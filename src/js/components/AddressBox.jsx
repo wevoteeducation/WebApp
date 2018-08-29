@@ -13,8 +13,11 @@ import VoterStore from "../stores/VoterStore";
 export default class AddressBox extends Component {
   static propTypes = {
     cancelEditAddress: PropTypes.func,
+    disableAutoFocus: PropTypes.bool,
+    manualFocus: PropTypes.bool,
     toggleSelectAddressModal: PropTypes.func,
     saveUrl: PropTypes.string.isRequired,
+    waitingMessage: PropTypes.string,
   };
 
   constructor (props) {
@@ -52,6 +55,19 @@ export default class AddressBox extends Component {
     }
   }
 
+  componentDidUpdate () {
+    // If we're in the slide with this component, autofocus the address box, otherwise defocus.
+    let { manualFocus } = this.props;
+    if (manualFocus !== undefined) {
+      let address_box = this.refs.autocomplete;
+      if (address_box && manualFocus) {
+        address_box.focus();
+      } else {
+        address_box.blur();
+      }
+    }
+  }
+
   onVoterStoreChange () {
     // console.log("AddressBox, onVoterStoreChange, this.state:", this.state);
     if (this.props.toggleSelectAddressModal) {
@@ -69,7 +85,10 @@ export default class AddressBox extends Component {
   }
 
   onBallotStoreChange () {
-    this.setState({ ballotCaveat: BallotStore.getBallotCaveat() });
+    // console.log("AddressBox, onBallotStoreChange, this.state:", this.state);
+    this.setState({
+      ballotCaveat: BallotStore.getBallotCaveat()
+    });
   }
 
   _placeChanged (addressAutocomplete) {
@@ -109,8 +128,12 @@ export default class AddressBox extends Component {
   render () {
     renderLog(__filename);
     if (this.state.loading) {
+      let waitingMessage = "Please wait a moment while we find your ballot...";
+      if (this.props.waitingMessage) {
+        waitingMessage = this.props.waitingMessage;
+      }
       return <div>
-            <h2>Please wait a moment while we adjust your ballot options to the new location...</h2>
+            <h2>{waitingMessage}</h2>
             {LoadingWheel}
           </div>;
     }
@@ -126,7 +149,7 @@ export default class AddressBox extends Component {
             className="form-control"
             ref="autocomplete"
             placeholder="Enter address where you are registered to vote"
-            autoFocus={!isCordova()}
+            autoFocus={!isCordova() && !this.props.disableAutoFocus}
           />
         </form>
         <div>
