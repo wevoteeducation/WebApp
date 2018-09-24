@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-// import { Button } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { Link } from "react-router";
 import AddressBox from "../../components/AddressBox";
 import AnalyticsActions from "../../actions/AnalyticsActions";
@@ -52,7 +52,9 @@ export default class Ballot extends Component {
     super(props);
     this.state = {
       ballotElectionList: [],
+      ballotWithAllItems: [],
       ballotWithAllItemsByFilterType: [],
+      ballot_item_filter_type: "",
       ballot_returned_we_vote_id: "",
       ballot_location_shortcut: "",
       candidate_for_modal: {
@@ -112,10 +114,20 @@ export default class Ballot extends Component {
     let ballotWithAllItemsByFilterType = BallotStore.getBallotByFilterType(filter_type);
     if (ballotWithAllItemsByFilterType !== undefined) {
       // console.log("ballotWithAllItemsByFilterType !== undefined");
-      this.setState({
-        ballotWithAllItemsByFilterType: ballotWithAllItemsByFilterType,
-        filter_type: filter_type,
-      });
+      if (filter_type === "all") {
+        this.setState({
+          ballotWithAllItems: ballotWithAllItemsByFilterType,
+          ballotWithAllItemsByFilterType: ballotWithAllItemsByFilterType,
+          filter_type: filter_type,
+        });
+      } else {
+        let ballotWithAllItems = BallotStore.getBallotByFilterType("all");
+        this.setState({
+          ballotWithAllItems: ballotWithAllItems,
+          ballotWithAllItemsByFilterType: ballotWithAllItemsByFilterType,
+          filter_type: filter_type,
+        });
+      }
     }
 
     let google_civic_election_id_from_url = this.props.params.google_civic_election_id || 0;
@@ -230,6 +242,7 @@ export default class Ballot extends Component {
 
     this.setState({
       ballotElectionList: BallotStore.ballotElectionList(),
+      ballot_item_filter_type: "Federal",
       ballot_returned_we_vote_id: ballot_returned_we_vote_id,
       ballot_location_shortcut: ballot_location_shortcut,
       google_civic_election_id: parseInt(google_civic_election_id, 10),
@@ -262,6 +275,7 @@ export default class Ballot extends Component {
     // Were there any actual changes?
     if (ballot_returned_we_vote_id !== this.state.ballot_returned_we_vote_id || ballot_location_shortcut !== this.state.ballot_location_shortcut || google_civic_election_id !== this.state.google_civic_election_id || filter_type !== this.state.filter_type) {
       this.setState({
+        ballotWithAllItems: BallotStore.getBallotByFilterType("all"),
         ballotWithAllItemsByFilterType: BallotStore.getBallotByFilterType(filter_type),
         ballot_returned_we_vote_id: ballot_returned_we_vote_id,
         ballot_location_shortcut: ballot_location_shortcut,
@@ -416,6 +430,7 @@ export default class Ballot extends Component {
         let prior_filter_type = this.state.filter_type || "all";
         let new_filter_type = this.state.location && this.state.location.query && this.state.location.query.type !== "" ? this.state.location.query.type : prior_filter_type;
         this.setState({
+          ballotWithAllItems: BallotStore.getBallotByFilterType("all"),
           ballotWithAllItemsByFilterType: BallotStore.getBallotByFilterType(new_filter_type),
           filter_type: new_filter_type,
         });
@@ -542,20 +557,33 @@ export default class Ballot extends Component {
     }
   }
 
-  ballotItemLinkHasBeenClicked (selectedBallotItemId){
+  toggleExpandBallotItemDetails (selectedBallotItemId) {
     if (this.ballotItems[selectedBallotItemId] &&
         this.ballotItems[selectedBallotItemId].ballotItem &&
-        this.ballotItems[selectedBallotItemId].ballotItem.toggleExpandDetails){
+        this.ballotItems[selectedBallotItemId].ballotItem.toggleExpandDetails) {
       this.ballotItems[selectedBallotItemId].ballotItem.toggleExpandDetails(true);
+    }
+  }
+
+  ballotItemLinkHasBeenClicked (selectedBallotItemId) {
+    let ballot_item = this.state.ballotWithAllItemsByFilterType.find(item => item.we_vote_id === selectedBallotItemId);
+    if (ballot_item && ballot_item.kind_of_ballot_item === "MEASURE") {
+      this.setState({
+        ballot_item_filter_type: "Measure",
+      }, () => this.toggleExpandBallotItemDetails(selectedBallotItemId));
+    } else {
+      this.setState({
+        ballot_item_filter_type: ballot_item.race_office_level,
+      }, () => this.toggleExpandBallotItemDetails(selectedBallotItemId));
     }
   }
 
   getEmptyMessageByFilterType (filter_type) {
     switch (filter_type) {
       case "filterRemaining":
-        return "You already chose a candidate or position for each ballot item";
-      case "filterSupport":
-        return "You haven't supported any candidates or measures yet.";
+        return "You have chosen a candidate for every office and decided on all measures.";
+      case "filterDecided":
+        return "You haven't supported any candidates or decided on any measures yet.";
       default:
         return "";
     }
@@ -569,9 +597,23 @@ export default class Ballot extends Component {
     });
   }
 
+  setBallotItemFilterType (type) {
+    if (type === this.state.ballot_item_filter_type) {
+      this.setState({
+        ballot_item_filter_type: "All",
+      });
+    } else {
+      this.setState({
+        ballot_item_filter_type: type,
+      });
+    }
+  }
+
   render () {
     renderLog(__filename);
+    // console.log("Ballot render");
 
+    const BALLOT_ITEM_FILTER_TYPES = ["Federal", "State", "Measure", "Local"];
     let text_for_map_search = VoterStore.getTextForMapSearch();
     let issues_voter_can_follow = IssueStore.getIssuesVoterCanFollow(); // Don't auto-open intro until Issues are loaded
     let issues_voter_can_follow_exist = issues_voter_can_follow && issues_voter_can_follow.length;
@@ -765,16 +807,57 @@ export default class Ballot extends Component {
                   </div>
                 </div> :
                 <div>
+                  { this.state.ballotWithAllItemsByFilterType && this.state.ballotWithAllItemsByFilterType.length ?
+                    <div className="row ballot__item-filter-tabs">
+                      { BALLOT_ITEM_FILTER_TYPES.map(one_type => {
+                          let allBallotItemsByFilterType = this.state.ballotWithAllItems.filter(item => {
+                            if (one_type === "Measure") {
+                              return item.kind_of_ballot_item === "MEASURE";
+                            } else {
+                              return one_type === item.race_office_level;
+                            }
+                          });
+                          if (allBallotItemsByFilterType.length) {
+                            let ballotItemsByFilterType = this.state.ballotWithAllItemsByFilterType.filter(item => {
+                              if (one_type === "Measure") {
+                                return item.kind_of_ballot_item === "MEASURE";
+                              } else {
+                                return one_type === item.race_office_level;
+                              }
+                            });
+                            return <div className="col-6 col-sm-3 u-stack--md u-inset__h--sm" key={one_type}>
+                              <Button block active={one_type === this.state.ballot_item_filter_type}
+                                      onClick={() => this.setBallotItemFilterType(one_type)}>
+                                {one_type}&nbsp;({ballotItemsByFilterType.length})
+                              </Button>
+                            </div>;
+                          } else {
+                            return null;
+                          }
+                        })
+                      }
+                    </div> :
+                    null
+                  }
                   <div className={isWebApp() ? "BallotList" : "BallotList__cordova"}>
-                    {this.state.ballotWithAllItemsByFilterType.map( (item) => <BallotItemCompressed toggleCandidateModal={this.toggleCandidateModal}
-                                                                                                    toggleMeasureModal={this.toggleMeasureModal}
-                                                                                                    key={item.we_vote_id}
-                                                                                                    updateOfficeDisplayUnfurledTracker={this.updateOfficeDisplayUnfurledTracker}
-                                                                                                    allBallotItemsCount={this.state.ballotWithAllItemsByFilterType.length}
-                                                                                                    urlWithoutHash={this.props.location.pathname + this.props.location.search}
-                                                                                                    currentBallotIdInUrl={this.props.location.hash.slice(1)}
-                                                                                                    ref={ref => { this.ballotItems[item.we_vote_id] = ref; }}
-                                                                                                    {...item} />)
+                    { this.state.ballotWithAllItemsByFilterType.map( (item) => {
+                        // console.log(this.state.ballot_item_filter_type);
+                        if (this.state.ballot_item_filter_type === "All" ||
+                            item.kind_of_ballot_item === "MEASURE" && this.state.ballot_item_filter_type === "Measure" ||
+                            this.state.ballot_item_filter_type === item.race_office_level) {
+                          return <BallotItemCompressed toggleCandidateModal={this.toggleCandidateModal}
+                                                       toggleMeasureModal={this.toggleMeasureModal}
+                                                       key={item.we_vote_id}
+                                                       updateOfficeDisplayUnfurledTracker={this.updateOfficeDisplayUnfurledTracker}
+                                                       allBallotItemsCount={this.state.ballotWithAllItemsByFilterType.length}
+                                                       urlWithoutHash={this.props.location.pathname + this.props.location.search}
+                                                       currentBallotIdInUrl={this.props.location.hash.slice(1)}
+                                                       ref={ref => { this.ballotItems[item.we_vote_id] = ref; }}
+                                                       {...item} />;
+                        } else {
+                          return null;
+                        }
+                      })
                     }
                   </div>
                 </div>

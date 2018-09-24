@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { Button } from "react-bootstrap";
 import AnalyticsActions from "../../actions/AnalyticsActions";
 import CandidateActions from "../../actions/CandidateActions";
 import CandidateItem from "../../components/Ballot/CandidateItem";
@@ -8,6 +9,7 @@ import { capitalizeString } from "../../utils/textFormat";
 import GuideList from "../../components/VoterGuide/GuideList";
 import Helmet from "react-helmet";
 import IssueActions from "../../actions/IssueActions";
+import IssuesFollowedByBallotItemDisplayList from "../../components/Issues/IssuesFollowedByBallotItemDisplayList";
 import IssueStore from "../../stores/IssueStore";
 import LoadingWheel from "../../components/LoadingWheel";
 import { renderLog } from "../../utils/logging";
@@ -79,6 +81,17 @@ export default class Candidate extends Component {
     SupportActions.retrievePositionsCountsForOneBallotItem(this.props.params.candidate_we_vote_id);
     OrganizationActions.organizationsFollowedRetrieve();
 
+    // We want to make sure we have all of the position information so that comments show up
+    let voter_guides_to_follow_for_this_ballot_item = VoterGuideStore.getVoterGuidesToFollowForBallotItemId(this.props.params.candidate_we_vote_id);
+
+    if (voter_guides_to_follow_for_this_ballot_item) {
+      voter_guides_to_follow_for_this_ballot_item.forEach(one_voter_guide => {
+        // console.log("one_voter_guide: ", one_voter_guide);
+        OrganizationActions.positionListForOpinionMaker(one_voter_guide.organization_we_vote_id, false, true, one_voter_guide.google_civic_election_id);
+      });
+
+    }
+
     // Display the candidate's name in the search box
     let searchBoxText = this.state.candidate.ballot_item_display_name || "";  // TODO DALE Not working right now
     SearchAllActions.exitSearch(searchBoxText); // TODO: still not used :)
@@ -88,7 +101,7 @@ export default class Candidate extends Component {
       organizationWeVoteId: organizationWeVoteId,
       position_list_from_advisers_followed_by_voter: CandidateStore.getPositionList(this.props.params.candidate_we_vote_id),
       voter_guides_to_follow_for_latest_ballot_item: VoterGuideStore.getVoterGuidesToFollowForLatestBallotItem(),
-      voter_guides_to_follow_for_this_ballot_item: VoterGuideStore.getVoterGuidesToFollowForBallotItemId(this.props.params.candidate_we_vote_id),
+      voter_guides_to_follow_for_this_ballot_item: voter_guides_to_follow_for_this_ballot_item,
     });
   }
 
@@ -187,7 +200,8 @@ export default class Candidate extends Component {
             <div>
               <PositionList position_list={this.state.position_list_from_advisers_followed_by_voter}
                             hideSimpleSupportOrOppose
-                            ballot_item_display_name={this.state.candidate.ballot_item_display_name} />
+                            ballot_item_display_name={this.state.candidate.ballot_item_display_name}
+                            positionListExistsTitle={<div><h3 className="card__additional-heading">{"Your Network's Opinions"}</h3></div>}/>
             </div> :
             null
           }
@@ -199,7 +213,21 @@ export default class Candidate extends Component {
                        organizationsToFollow={this.state.voter_guides_to_follow_for_this_ballot_item}/></div>
           }
         </div>
+        <div className="card__additional u-inset__squish--md">
+          <IssuesFollowedByBallotItemDisplayList ballot_item_display_name={this.state.candidate.ballot_item_display_name}
+                                                 ballotItemWeVoteId={this.state.candidate_we_vote_id}
+                                                 overlayTriggerOnClickOnly />
+        </div>
       </section>
+      <OpenExternalWebSite url="https://api.wevoteusa.org/vg/create/"
+                           className="opinions-followed__missing-org-link"
+                           target="_blank"
+                           title="Endorsements Missing?"
+                           body={<Button className="u-margin-top--sm u-stack--xs" bsStyle="primary">Endorsements Missing?</Button>}
+      />
+      <div className="opinions-followed__missing-org-text u-no-break">
+        Are there endorsements for {candidateName} that you expected to see?
+      </div>
       <br />
       <ThisIsMeAction twitter_handle_being_viewed={this.state.candidate.twitter_handle}
                     name_being_viewed={this.state.candidate.ballot_item_display_name}

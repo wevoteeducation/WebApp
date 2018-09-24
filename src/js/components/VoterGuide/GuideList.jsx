@@ -1,10 +1,13 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { Button } from "react-bootstrap";
 import ReactCSSTransitionGroup from "react-addons-css-transition-group";
 import CandidateStore from "../../stores/CandidateStore";
 import FollowToggle from "../Widgets/FollowToggle";
 import MeasureStore from "../../stores/MeasureStore";
+import OpenExternalWebSite from "../../utils/OpenExternalWebSite";
 import OrganizationActions from "../../actions/OrganizationActions";
+// import OrganizationStore from "../../stores/OrganizationStore";
 import VoterGuideDisplayForList from "./VoterGuideDisplayForList";
 import { showToastSuccess } from "../../utils/showToast";
 import { stringContains } from "../../utils/textFormat";
@@ -61,6 +64,7 @@ export default class GuideList extends Component {
       // console.log("GuideList this.state.organizations_to_follow === undefined");
       return null;
     }
+    // console.log("components/VoterGuide/GuideList render");
 
     let organization_position_for_this_ballot_item;
 
@@ -75,6 +79,8 @@ export default class GuideList extends Component {
         if (!organization.is_support_or_positive_rating && !organization.is_oppose_or_negative_rating && !organization.is_information_only && this.state.ballot_item_we_vote_id && organization.organization_we_vote_id) {
           if (stringContains("cand", this.state.ballot_item_we_vote_id)) {
             organization_position_for_this_ballot_item = CandidateStore.getPositionAboutCandidateFromOrganization(this.state.ballot_item_we_vote_id, organization.organization_we_vote_id);
+            // Didn't work
+            // organization_position_for_this_ballot_item = OrganizationStore.getOrganizationPositionByWeVoteId(organization.organization_we_vote_id, this.state.ballot_item_we_vote_id);
           } else if (stringContains("meas", this.state.ballot_item_we_vote_id)) {
             organization_position_for_this_ballot_item = MeasureStore.getPositionAboutMeasureFromOrganization(this.state.ballot_item_we_vote_id, organization.organization_we_vote_id);
           }
@@ -99,7 +105,23 @@ export default class GuideList extends Component {
 
     return <div className="guidelist card-child__list-group">
         <ReactCSSTransitionGroup transitionName="org-ignore" transitionEnterTimeout={500} transitionLeaveTimeout={300}>
-          {organization_list}
+          { organization_list.length ?
+            organization_list :
+            <div className="u-flex u-flex-column u-items-center">
+              <div className="u-margin-top--sm u-stack--sm u-no-break">
+                No results found.
+              </div>
+              <OpenExternalWebSite url="https://api.wevoteusa.org/vg/create/"
+                                   className="opinions-followed__missing-org-link"
+                                   target="_blank"
+                                   title="Organization Missing?"
+                                   body={<Button className="u-stack--xs" bsStyle="primary">Organization Missing?</Button>}
+              />
+              <div className="opinions-followed__missing-org-text u-stack--sm u-no-break">
+                Don’t see an organization you want to Listen to?
+              </div>
+            </div>
+          }
         </ReactCSSTransitionGroup>
       </div>;
   }

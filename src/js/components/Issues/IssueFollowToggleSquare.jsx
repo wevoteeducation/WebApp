@@ -63,8 +63,8 @@ export default class IssueFollowToggleSquare extends Component {
     }
     let issue_image_url;
     if (this.props.issue_image_url) {
-      // 2018-08-17 We are turning off issue images
-      // issue_image_url = this.props.issue_image_url;
+      // This is where we can turn off issue images
+      issue_image_url = this.props.issue_image_url;
     } else {
       // let issue_name_base = this.props.issue_name.toLowerCase().replace(/[^a-z0-9_\']/g, "-").replace(/-+/g, "-");
       // issue_image_url = "/img/global/issues/" + issue_name_base + "-110x110.jpg";
@@ -90,7 +90,7 @@ export default class IssueFollowToggleSquare extends Component {
     } else {
       return this.state.is_following ?
         <div className={this.props.grid + " intro-modal__square u-cursor--pointer"} onClick={this.onIssueStopFollowing}>
-          <ImageHandler sizeClassName="intro-modal__square-image intro-modal__square-following"
+          <ImageHandler sizeClassName="intro-modal__square-image intro-modal__square-following image-issue-photo-placeholder"
                         imageUrl={ issue_image_url }
                         alt={this.props.issue_name}
                         kind_of_image="ISSUE-PHOTO" />
@@ -106,7 +106,7 @@ export default class IssueFollowToggleSquare extends Component {
           }
         </div> :
         <div className={this.props.grid + " intro-modal__square u-cursor--pointer"} onClick={this.onIssueFollow}>
-          <ImageHandler sizeClassName="intro-modal__square-image"
+          <ImageHandler sizeClassName="intro-modal__square-image image-issue-photo-placeholder"
                         imageUrl={ issue_image_url }
                         alt={this.props.issue_name}
                         kind_of_image="ISSUE-PHOTO" />

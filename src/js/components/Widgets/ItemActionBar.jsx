@@ -45,6 +45,10 @@ export default class ItemActionBar extends Component {
       showSupportOrOpposeHelpModal: false,
       supportCount: 0,
       opposeCount: 0,
+      yesVoteDescription: "",
+      yesVoteDescriptionExists: false,
+      noVoteDescription: "",
+      noVoteDescriptionExists: false,
       // supportProps: this.props.supportProps,
       transitioning: false,
     };
@@ -56,6 +60,7 @@ export default class ItemActionBar extends Component {
   }
 
   componentDidMount () {
+    this.measureStoreListener = MeasureStore.addListener(this.onMeasureStoreChange.bind(this));
     // console.log("itemActionBar, NEW componentDidMount");
     let isOpposeAPIState = false;
     let isPublicPosition = false;
@@ -78,7 +83,7 @@ export default class ItemActionBar extends Component {
       isSupportAPIState: isSupportAPIState,
       supportCount: supportCount,
       opposeCount: opposeCount,
-    });
+    }, this.onMeasureStoreChange);
   }
 
   componentWillReceiveProps (nextProps) {
@@ -87,7 +92,7 @@ export default class ItemActionBar extends Component {
       // console.log("itemActionBar, ballotItemWeVoteId setState");
       this.setState({
         ballotItemWeVoteId: nextProps.ballot_item_we_vote_id,
-      });
+      }, this.onMeasureStoreChange);
     }
     // Only proceed if we have valid supportProps
     if (nextProps.supportProps !== undefined && nextProps.supportProps) {
@@ -220,7 +225,33 @@ export default class ItemActionBar extends Component {
       // console.log("shouldComponentUpdate: itemActionBar, showSupportOrOpposeHelpModal different");
       return true;
     }
+    if (this.state.yesVoteDescriptionExists !== nextState.yesVoteDescriptionExists) {
+      // console.log("shouldComponentUpdate: itemActionBar, yesVoteDescriptionExists different");
+      return true;
+    }
+    if (this.state.noVoteDescriptionExists !== nextState.noVoteDescriptionExists) {
+      // console.log("shouldComponentUpdate: itemActionBar, noVoteDescriptionExists different");
+      return true;
+    }
     return false;
+  }
+
+  componentWillUnmount () {
+    this.measureStoreListener.remove();
+  }
+
+  onMeasureStoreChange () {
+    if (this.isMeasure()) {
+      this.setState({
+        yesVoteDescription: MeasureStore.getYesVoteDescription(this.state.ballotItemWeVoteId),
+        noVoteDescription: MeasureStore.getNoVoteDescription(this.state.ballotItemWeVoteId),
+      }, () => {
+        this.setState({
+          yesVoteDescriptionExists: this.state.yesVoteDescription && this.state.yesVoteDescription.length,
+          noVoteDescriptionExists: this.state.noVoteDescription && this.state.noVoteDescription.length,
+        });
+      });
+    }
   }
 
   isMeasure () {
@@ -468,24 +499,6 @@ export default class ItemActionBar extends Component {
     const supportButtonPopoverTooltip = <Tooltip id="supportButtonTooltip">{this.isSupportCalculated() ? supportButtonUnselectedPopOverText : supportButtonSelectedPopOverText }</Tooltip>;
     const opposeButtonPopoverTooltip = <Tooltip id="opposeButtonTooltip">{this.isOpposeCalculated() ? opposeButtonUnselectedPopOverText : opposeButtonSelectedPopOverText}</Tooltip>;
 
-    let yesVoteDescriptionExists = false;
-    let yesVoteDescription = "";
-    if (this.isMeasure()) {
-      yesVoteDescription = MeasureStore.getYesVoteDescription(this.state.ballotItemWeVoteId);
-      if (yesVoteDescription && yesVoteDescription.length) {
-        yesVoteDescriptionExists = true;
-      }
-    }
-
-    let noVoteDescriptionExists = false;
-    let noVoteDescription = "";
-    if (this.isMeasure()) {
-      noVoteDescription = MeasureStore.getNoVoteDescription(this.state.ballotItemWeVoteId);
-      if (noVoteDescription && noVoteDescription.length) {
-        noVoteDescriptionExists = true;
-      }
-    }
-
     const supportButton = <button className={"item-actionbar__btn item-actionbar__btn--support btn btn-default" + (this.isSupportCalculated() ? " support-at-state" : "")} onClick={() => this.supportItem()}>
       <span className="btn__icon">
         <Icon name="thumbs-up-icon" width={iconSize} height={iconSize} color={supportIconColor} />
@@ -511,26 +524,26 @@ export default class ItemActionBar extends Component {
     </button>;
 
     return <div className={ this.props.shareButtonHide ? "item-actionbar--inline hidden-print" : "item-actionbar hidden-print" }>
-      <div className={(yesVoteDescriptionExists || noVoteDescriptionExists ? "" : "btn-group") + (!this.props.shareButtonHide ? " u-push--sm" : "")}>
+      <div className={(this.state.yesVoteDescriptionExists || this.state.noVoteDescriptionExists ? "" : "btn-group") + (!this.props.shareButtonHide ? " u-push--sm" : "")}>
 
         {/* Start of Support Button */}
         <div className="hidden-xs item-actionbar__position-bar">
           <OverlayTrigger placement="top" overlay={supportButtonPopoverTooltip}>{supportButton}</OverlayTrigger>
-          {yesVoteDescriptionExists ? <span className="item-actionbar__following-text">{yesVoteDescription}</span> : null}
+          {this.state.yesVoteDescriptionExists ? <span className="item-actionbar__following-text">{this.state.yesVoteDescription}</span> : null}
         </div>
         <div className="visible-xs item-actionbar__position-bar item-actionbar__position-bar--mobile">
           {supportButton}
-          {yesVoteDescriptionExists ? <span className="item-actionbar__following-text">{yesVoteDescription}</span> : null}
+          {this.state.yesVoteDescriptionExists ? <span className="item-actionbar__following-text">{this.state.yesVoteDescription}</span> : null}
         </div>
 
         {/* Start of Oppose Button */}
         <div className="hidden-xs item-actionbar__position-bar">
           <OverlayTrigger placement="top" overlay={opposeButtonPopoverTooltip}>{opposeButton}</OverlayTrigger>
-          {noVoteDescriptionExists ? <span className="item-actionbar__following-text">{noVoteDescription}</span> : null}
+          {this.state.noVoteDescriptionExists ? <span className="item-actionbar__following-text">{this.state.noVoteDescription}</span> : null}
         </div>
         <div className="visible-xs item-actionbar__position-bar item-actionbar__position-bar--mobile">
           {opposeButton}
-          {noVoteDescriptionExists ? <span className="item-actionbar__following-text">{noVoteDescription}</span> : null}
+          {this.state.noVoteDescriptionExists ? <span className="item-actionbar__following-text">{this.state.noVoteDescription}</span> : null}
         </div>
       { this.props.commentButtonHide ?
         null :
