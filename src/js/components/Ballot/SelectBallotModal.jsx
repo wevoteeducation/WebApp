@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { Modal } from "react-bootstrap";
 import BallotElectionList from "./BallotElectionList";
 import BallotLocationChoices from "../Navigation/BallotLocationChoices";
+import { isCordova } from "../../utils/cordovaUtils";
 import EditAddressInPlace from "../../components/Widgets/EditAddressInPlace";
 import { calculateBallotBaseUrl } from "../../utils/textFormat";
 import { renderLog } from "../../utils/logging";
@@ -52,17 +53,17 @@ export default class SelectBallotModal extends Component {
 
     let ballotElectionList = this.props.ballotElectionList || [];
 
-    let voter_address_object = VoterStore.getAddressObject();
+    let voterAddressObject = VoterStore.getAddressObject();
     // console.log("SelectBallotModal render, voter_address_object: ", voter_address_object);
-    return <Modal className="ballot-election-list ballot-election-list__modal ballot-election-list__modal-mobile"
+    return <Modal bsPrefix={`ballot-election-list ballot-election-list__modal ballot-election-list__modal-mobile ${isCordova() && "ballot-election-list__modal-cordova"}`}
                   onHide={() => this.props.toggleFunction(this.state.pathname)}
                   show={this.props.show}
                   >
       <Modal.Header closeButton onHide={() => this.props.toggleFunction(this.state.pathname)}>
-        <Modal.Title className="ballot-election-list__h1">Change to Another Ballot</Modal.Title>
+        <Modal.Title bsPrefix="ballot-election-list__h1">Change Address or Election</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <EditAddressInPlace address={voter_address_object}
+        <EditAddressInPlace address={voterAddressObject}
                             pathname={this.state.pathname}
                             toggleFunction={this.props.toggleFunction} />
         <br />

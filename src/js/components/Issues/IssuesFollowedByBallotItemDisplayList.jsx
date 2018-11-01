@@ -13,31 +13,30 @@ import { renderLog } from "../../utils/logging";
 //  with a dropdown under each one that has all of the organizations they can follow underneath.
 export default class IssuesFollowedByBallotItemDisplayList extends Component {
   static propTypes = {
-    ballot_item_display_name: PropTypes.string,
+    ballotItemDisplayName: PropTypes.string,
     ballotItemWeVoteId: PropTypes.string.isRequired,
     currentBallotIdInUrl: PropTypes.string,
     overlayTriggerOnClickOnly: PropTypes.bool,
     popoverBottom: PropTypes.bool,
     urlWithoutHash: PropTypes.string,
-    we_vote_id: PropTypes.string
   };
 
   constructor (props) {
     super(props);
     this.state = {
-      transitioning: false,
+      ballotItemDisplayName: false,
+      canScrollDesktop: false,
+      canScrollMobile: false,
+      canScrollLeftDesktop: false,
+      canScrollLeftMobile: false,
+      canScrollRightDesktop: true,
+      canScrollRightMobile: true,
+      issuesUnderThisBallotItem: [],
+      issuesUnderThisBallotItemVoterIsFollowing: [],
+      issuesUnderThisBallotItemVoterIsNotFollowing: [],
+      issuesVoterIsFollowing: [],
       showModal: false,
-      can_scroll_desktop: false,
-      can_scroll_mobile: false,
-      can_scroll_left_desktop: false,
-      can_scroll_left_mobile: false,
-      can_scroll_right_desktop: true,
-      can_scroll_right_mobile: true,
-      issues_under_this_ballot_item: [],
-      issues_under_this_ballot_item_voter_is_following: [],
-      issues_under_this_ballot_item_voter_not_following: [],
-      issues_voter_is_following: [],
-      maximum_organization_display: 4,
+      transitioning: false,
     };
     this.closeIssuesLabelPopover = this.closeIssuesLabelPopover.bind(this);
   }
@@ -49,11 +48,11 @@ export default class IssuesFollowedByBallotItemDisplayList extends Component {
     this.setScrollState();
     this.setState({
       ballotItemWeVoteId: this.props.ballotItemWeVoteId,
-      ballot_item_display_name: this.props.ballot_item_display_name ? this.props.ballot_item_display_name : "this candidate",
-      issues_under_this_ballot_item: IssueStore.getIssuesUnderThisBallotItem(this.props.ballotItemWeVoteId),
-      issues_under_this_ballot_item_voter_is_following: IssueStore.getIssuesUnderThisBallotItemVoterIsFollowing(this.props.ballotItemWeVoteId),
-      issues_under_this_ballot_item_voter_not_following: IssueStore.getIssuesUnderThisBallotItemVoterNotFollowing(this.props.ballotItemWeVoteId),
-      issues_voter_is_following: IssueStore.getIssuesVoterIsFollowing(),
+      ballotItemDisplayName: this.props.ballotItemDisplayName ? this.props.ballotItemDisplayName : "this candidate",
+      issuesUnderThisBallotItem: IssueStore.getIssuesUnderThisBallotItem(this.props.ballotItemWeVoteId),
+      issuesUnderThisBallotItemVoterIsFollowing: IssueStore.getIssuesUnderThisBallotItemVoterIsFollowing(this.props.ballotItemWeVoteId),
+      issuesUnderThisBallotItemVoterIsNotFollowing: IssueStore.getIssuesUnderThisBallotItemVoterNotFollowing(this.props.ballotItemWeVoteId),
+      issuesVoterIsFollowing: IssueStore.getIssuesVoterIsFollowing(),
     });
   }
 
@@ -61,11 +60,11 @@ export default class IssuesFollowedByBallotItemDisplayList extends Component {
     this.setScrollState();
     this.setState({
       ballotItemWeVoteId: nextProps.ballotItemWeVoteId,
-      ballot_item_display_name: nextProps.ballot_item_display_name ? nextProps.ballot_item_display_name : "this candidate",
-      issues_under_this_ballot_item: IssueStore.getIssuesUnderThisBallotItem(nextProps.ballotItemWeVoteId),
-      issues_under_this_ballot_item_voter_is_following: IssueStore.getIssuesUnderThisBallotItemVoterIsFollowing(nextProps.ballotItemWeVoteId),
-      issues_under_this_ballot_item_voter_not_following: IssueStore.getIssuesUnderThisBallotItemVoterNotFollowing(nextProps.ballotItemWeVoteId),
-      issues_voter_is_following: IssueStore.getIssuesVoterIsFollowing(),
+      ballotItemDisplayName: nextProps.ballotItemDisplayName ? nextProps.ballotItemDisplayName : "this candidate",
+      issuesUnderThisBallotItem: IssueStore.getIssuesUnderThisBallotItem(nextProps.ballotItemWeVoteId),
+      issuesUnderThisBallotItemVoterIsFollowing: IssueStore.getIssuesUnderThisBallotItemVoterIsFollowing(nextProps.ballotItemWeVoteId),
+      issuesUnderThisBallotItemVoterIsNotFollowing: IssueStore.getIssuesUnderThisBallotItemVoterNotFollowing(nextProps.ballotItemWeVoteId),
+      issuesVoterIsFollowing: IssueStore.getIssuesVoterIsFollowing(),
     });
   }
 
@@ -81,10 +80,10 @@ export default class IssuesFollowedByBallotItemDisplayList extends Component {
   onIssueStoreChange () {
     this.setScrollState();
     this.setState({
-      issues_under_this_ballot_item: IssueStore.getIssuesUnderThisBallotItem(this.state.ballotItemWeVoteId),
-      issues_under_this_ballot_item_voter_is_following: IssueStore.getIssuesUnderThisBallotItemVoterIsFollowing(this.state.ballotItemWeVoteId),
-      issues_under_this_ballot_item_voter_not_following: IssueStore.getIssuesUnderThisBallotItemVoterNotFollowing(this.state.ballotItemWeVoteId),
-      issues_voter_is_following: IssueStore.getIssuesVoterIsFollowing(),
+      issuesUnderThisBallotItem: IssueStore.getIssuesUnderThisBallotItem(this.state.ballotItemWeVoteId),
+      issuesUnderThisBallotItemVoterIsFollowing: IssueStore.getIssuesUnderThisBallotItemVoterIsFollowing(this.state.ballotItemWeVoteId),
+      issuesUnderThisBallotItemVoterIsNotFollowing: IssueStore.getIssuesUnderThisBallotItemVoterNotFollowing(this.state.ballotItemWeVoteId),
+      issuesVoterIsFollowing: IssueStore.getIssuesVoterIsFollowing(),
     });
   }
 
@@ -105,13 +104,13 @@ export default class IssuesFollowedByBallotItemDisplayList extends Component {
       let newPosition = $(element).scrollLeft();
       if (visibleTag === "desktop") {
         this.setState({
-          can_scroll_left_desktop: newPosition > 0,
-          can_scroll_right_desktop: true,
+          canScrollLeftDesktop: newPosition > 0,
+          canScrollRightDesktop: true,
         });
       } else {
         this.setState({
-          can_scroll_left_mobile: newPosition > 0,
-          can_scroll_right_mobile: true,
+          canScrollLeftMobile: newPosition > 0,
+          canScrollRightMobile: true,
         });
       }
     });
@@ -127,13 +126,13 @@ export default class IssuesFollowedByBallotItemDisplayList extends Component {
       let newPosition = $(element).scrollLeft();
       if (visibleTag === "desktop") {
         this.setState({
-          can_scroll_left_desktop: newPosition > 0,
-          can_scroll_right_desktop: position + width === newPosition,
+          canScrollLeftDesktop: newPosition > 0,
+          canScrollRightDesktop: position + width === newPosition,
         });
       } else {
         this.setState({
-          can_scroll_left_mobile: newPosition > 0,
-          can_scroll_right_mobile: position + width === newPosition,
+          canScrollLeftMobile: newPosition > 0,
+          canScrollRightMobile: position + width === newPosition,
         });
       }
     });
@@ -147,31 +146,32 @@ export default class IssuesFollowedByBallotItemDisplayList extends Component {
     let mobileListVisibleWidth = $(mobileList).width();
     let mobileListWidth = $(mobileList).children().eq(0).children().eq(0).width();
     this.setState({
-      can_scroll_desktop: desktopListVisibleWidth <= desktopListWidth,
-      can_scroll_mobile: mobileListVisibleWidth <= mobileListWidth,
+      canScrollDesktop: desktopListVisibleWidth <= desktopListWidth,
+      canScrollMobile: mobileListVisibleWidth <= mobileListWidth,
     });
   }
 
   render () {
     renderLog(__filename);
-    let issuesUnderThisBallotItemVoterIsFollowingFound = this.state.issues_under_this_ballot_item_voter_is_following && this.state.issues_under_this_ballot_item_voter_is_following.length;
-    let issuesUnderThisBallotItemVoterIsNotFollowingFound = this.state.issues_under_this_ballot_item_voter_not_following && this.state.issues_under_this_ballot_item_voter_not_following.length;
+    let issuesUnderThisBallotItemVoterIsFollowingFound = this.state.issuesUnderThisBallotItemVoterIsFollowing && this.state.issuesUnderThisBallotItemVoterIsFollowing.length;
+    let issuesUnderThisBallotItemVoterIsNotFollowingFound = this.state.issuesUnderThisBallotItemVoterIsNotFollowing && this.state.issuesUnderThisBallotItemVoterIsNotFollowing.length;
 
     // console.log("this.state.ballotItemWeVoteId: ", this.state.ballotItemWeVoteId);
-    // console.log("this.state.issues_under_this_ballot_item: ", this.state.issues_under_this_ballot_item);
-    // console.log("this.state.issues_under_this_ballot_item_voter_is_following: ", this.state.issues_under_this_ballot_item_voter_is_following);
-    // console.log("this.state.issues_under_this_ballot_item_voter_not_following: ", this.state.issues_under_this_ballot_item_voter_not_following);
+    // console.log("this.state.issuesUnderThisBallotItem: ", this.state.issuesUnderThisBallotItem);
+    // console.log("this.state.issuesUnderThisBallotItemVoterIsFollowing: ", this.state.issuesUnderThisBallotItemVoterIsFollowing);
+    // console.log("this.state.issuesUnderThisBallotItemVoterIsNotFollowing: ", this.state.issuesUnderThisBallotItemVoterIsNotFollowing);
     if (!issuesUnderThisBallotItemVoterIsFollowingFound && !issuesUnderThisBallotItemVoterIsNotFollowingFound) {
       return null;
     }
 
+    // Removed bsPrefix="card-popover"
     const issuesLabelPopover =
       <Popover id="positions-popover-trigger-click-root-close"
-               title={<span>Issues related to {this.state.ballot_item_display_name}
+               title={<span>Issues related to {this.state.ballotItemDisplayName}
                   <span className={`fa fa-times pull-right u-cursor--pointer ${isCordova() && "u-mobile-x"} `} aria-hidden="true" /></span>}
                onClick={this.closeIssuesLabelPopover}
-               className="card-popover">
-        See opinions about {this.state.ballot_item_display_name}, organized by issues you care about.
+               >
+        See opinions about {this.state.ballotItemDisplayName}, organized by issues you care about.
       </Popover>;
 
     const issuesLabel =
@@ -181,25 +181,25 @@ export default class IssuesFollowedByBallotItemDisplayList extends Component {
                       overlay={issuesLabelPopover}>
         <span className="issues-list-stacked__support-label u-cursor--pointer u-no-break">
           <span>Related<br />Issues</span>
-          <span>&nbsp;<i className="fa fa-info-circle fa-md issues-list-stacked__info-icon-for-popover hidden-print" aria-hidden="true" />&nbsp;</span>
+          <span>&nbsp;<i className="fa fa-info-circle fa-md issues-list-stacked__info-icon-for-popover d-print-none" aria-hidden="true" />&nbsp;</span>
         </span>
       </OverlayTrigger>;
 
     return (
       <div className="issues-list-stacked__support-list u-flex u-justify-between u-items-center">
         {/* Click to scroll left through list Desktop */}
-        { this.state.can_scroll_desktop && this.state.can_scroll_left_desktop ?
-          <i className="fa fa-2x fa-chevron-left issues-list-stacked__support-list__scroll-icon u-cursor--pointer hidden-xs hidden-print" aria-hidden="true" onClick={this.scrollLeft.bind(this, "desktop")} /> :
-          <i className="fa fa-2x fa-chevron-left network-positions-stacked__support-list__scroll-icon--disabled hidden-xs hidden-print" aria-hidden="true" />
+        { this.state.canScrollDesktop && this.state.canScrollLeftDesktop ?
+          <i className="fa fa-2x fa-chevron-left issues-list-stacked__support-list__scroll-icon u-cursor--pointer d-none d-sm-block d-print-none" aria-hidden="true" onClick={this.scrollLeft.bind(this, "desktop")} /> :
+          <i className="fa fa-2x fa-chevron-left network-positions-stacked__support-list__scroll-icon--disabled d-none d-sm-block d-print-none" aria-hidden="true" />
         }
         {/* Click to scroll left through list Mobile */}
-        { this.state.can_scroll_mobile && this.state.can_scroll_left_mobile ?
-          <i className="fa fa-2x fa-chevron-left issues-list-stacked__support-list__scroll-icon u-cursor--pointer visible-xs hidden-print" aria-hidden="true" onClick={this.scrollLeft.bind(this, "mobile")} /> :
-          <i className="fa fa-2x fa-chevron-left network-positions-stacked__support-list__scroll-icon--disabled visible-xs hidden-print" aria-hidden="true" />
+        { this.state.canScrollMobile && this.state.canScrollLeftMobile ?
+          <i className="fa fa-2x fa-chevron-left issues-list-stacked__support-list__scroll-icon u-cursor--pointer d-block d-sm-none d-print-none" aria-hidden="true" onClick={this.scrollLeft.bind(this, "mobile")} /> :
+          <i className="fa fa-2x fa-chevron-left network-positions-stacked__support-list__scroll-icon--disabled d-block d-sm-none d-print-none" aria-hidden="true" />
         }
         <div className="issues-list-stacked__support-list__container-wrap">
           {/* Show a break-down of the current positions in your network */}
-          <span ref={`${this.props.ballotItemWeVoteId}-issue-list-desktop`} className="issues-list-stacked__support-list__container u-flex u-justify-between u-items-center u-inset__v--xs hidden-xs">
+          <span ref={`${this.props.ballotItemWeVoteId}-issue-list-desktop`} className="issues-list-stacked__support-list__container u-flex u-justify-between u-items-center u-inset__v--xs d-none d-sm-block">
             <ul className="issues-list-stacked__support-list__items">
               <li className="issues-list-stacked__support-list__item">
                 {issuesLabel}
@@ -208,26 +208,26 @@ export default class IssuesFollowedByBallotItemDisplayList extends Component {
                 <IssuesDisplayListWithOrganizationPopovers ballotItemWeVoteId={this.state.ballotItemWeVoteId}
                                                            currentBallotIdInUrl={this.props.currentBallotIdInUrl}
                                                            issueImageSize={"MEDIUM"}
-                                                           issueListToDisplay={this.state.issues_under_this_ballot_item_voter_is_following}
+                                                           issueListToDisplay={this.state.issuesUnderThisBallotItemVoterIsFollowing}
                                                            overlayTriggerOnClickOnly={this.props.overlayTriggerOnClickOnly}
                                                            popoverBottom={this.props.popoverBottom}
                                                            toFollow
                                                            urlWithoutHash={this.props.urlWithoutHash}
-                                                           we_vote_id={this.props.we_vote_id} />
+                                                           />
                 {/* Issues the voter is not following yet */}
                 <IssuesDisplayListWithOrganizationPopovers ballotItemWeVoteId={this.state.ballotItemWeVoteId}
                                                            currentBallotIdInUrl={this.props.currentBallotIdInUrl}
                                                            issueImageSize={"MEDIUM"}
-                                                           issueListToDisplay={this.state.issues_under_this_ballot_item_voter_not_following}
+                                                           issueListToDisplay={this.state.issuesUnderThisBallotItemVoterIsNotFollowing}
                                                            overlayTriggerOnClickOnly={this.props.overlayTriggerOnClickOnly}
                                                            popoverBottom={this.props.popoverBottom}
                                                            toFollow
                                                            urlWithoutHash={this.props.urlWithoutHash}
-                                                           we_vote_id={this.props.we_vote_id} />
+                                                           />
               </li>
             </ul>
           </span>
-          <span ref={`${this.props.ballotItemWeVoteId}-issue-list-mobile`} className="issues-list-stacked__support-list__container u-flex u-justify-between u-items-center u-inset__v--xs visible-xs">
+          <span ref={`${this.props.ballotItemWeVoteId}-issue-list-mobile`} className="issues-list-stacked__support-list__container u-flex u-justify-between u-items-center u-inset__v--xs d-block d-sm-none">
             <ul className="issues-list-stacked__support-list__items">
               <li className="issues-list-stacked__support-list__item">
                 {issuesLabel}
@@ -236,35 +236,35 @@ export default class IssuesFollowedByBallotItemDisplayList extends Component {
                 <IssuesDisplayListWithOrganizationPopovers ballotItemWeVoteId={this.state.ballotItemWeVoteId}
                                                            currentBallotIdInUrl={this.props.currentBallotIdInUrl}
                                                            issueImageSize={"MEDIUM"}
-                                                           issueListToDisplay={this.state.issues_under_this_ballot_item_voter_is_following}
+                                                           issueListToDisplay={this.state.issuesUnderThisBallotItemVoterIsFollowing}
                                                            overlayTriggerOnClickOnly
                                                            popoverBottom={this.props.popoverBottom}
                                                            toFollow
                                                            urlWithoutHash={this.props.urlWithoutHash}
-                                                           we_vote_id={this.props.we_vote_id} />
+                                                           />
                 {/* Issues the voter is not following yet */}
                 <IssuesDisplayListWithOrganizationPopovers ballotItemWeVoteId={this.state.ballotItemWeVoteId}
                                                            currentBallotIdInUrl={this.props.currentBallotIdInUrl}
                                                            issueImageSize={"MEDIUM"}
-                                                           issueListToDisplay={this.state.issues_under_this_ballot_item_voter_not_following}
+                                                           issueListToDisplay={this.state.issuesUnderThisBallotItemVoterIsNotFollowing}
                                                            overlayTriggerOnClickOnly
                                                            popoverBottom={this.props.popoverBottom}
                                                            toFollow
                                                            urlWithoutHash={this.props.urlWithoutHash}
-                                                           we_vote_id={this.props.we_vote_id} />
+                                                           />
               </li>
             </ul>
           </span>
         </div>
         {/* Click to scroll right through list Desktop */}
-        { this.state.can_scroll_desktop && this.state.can_scroll_right_desktop ?
-          <i className="fa fa-2x fa-chevron-right issues-list-stacked__support-list__scroll-icon u-cursor--pointer hidden-xs hidden-print" aria-hidden="true" onClick={this.scrollRight.bind(this, "desktop")} /> :
-          <i className="fa fa-2x fa-chevron-right network-positions-stacked__support-list__scroll-icon--disabled hidden-xs hidden-print" aria-hidden="true" />
+        { this.state.canScrollDesktop && this.state.canScrollRightDesktop ?
+          <i className="fa fa-2x fa-chevron-right issues-list-stacked__support-list__scroll-icon u-cursor--pointer d-none d-sm-block d-print-none" aria-hidden="true" onClick={this.scrollRight.bind(this, "desktop")} /> :
+          <i className="fa fa-2x fa-chevron-right network-positions-stacked__support-list__scroll-icon--disabled d-none d-sm-block d-print-none" aria-hidden="true" />
         }
         {/* Click to scroll right through list Mobile */}
-        { this.state.can_scroll_mobile && this.state.can_scroll_right_mobile ?
-          <i className="fa fa-2x fa-chevron-right issues-list-stacked__support-list__scroll-icon u-cursor--pointer visible-xs hidden-print" aria-hidden="true" onClick={this.scrollRight.bind(this, "mobile")} /> :
-          <i className="fa fa-2x fa-chevron-right network-positions-stacked__support-list__scroll-icon--disabled visible-xs hidden-print" aria-hidden="true" />
+        { this.state.canScrollMobile && this.state.canScrollRightMobile ?
+          <i className="fa fa-2x fa-chevron-right issues-list-stacked__support-list__scroll-icon u-cursor--pointer d-block d-sm-none d-print-none" aria-hidden="true" onClick={this.scrollRight.bind(this, "mobile")} /> :
+          <i className="fa fa-2x fa-chevron-right network-positions-stacked__support-list__scroll-icon--disabled d-block d-sm-none d-print-none" aria-hidden="true" />
         }
       </div>
     );

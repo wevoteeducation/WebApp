@@ -4,17 +4,18 @@ import { Link } from "react-router";
 import Icon from "react-svg-icons";
 import BallotStore from "../../stores/BallotStore";
 import BookmarkStore from "../../stores/BookmarkStore";
-import { cordovaDot, historyPush, isCordova, isWebApp } from "../../utils/cordovaUtils";
+import { historyPush, isCordova, isWebApp } from "../../utils/cordovaUtils";
 import cookies from "../../utils/cookies";
 import FriendStore from "../../stores/FriendStore";
 import HeaderBarProfilePopUp from "./HeaderBarProfilePopUp";
 import HeaderBarAboutMenu from "./HeaderBarAboutMenu";
+import HeaderBarLogo from "./HeaderBarLogo";
 import { renderLog } from "../../utils/logging";
 import OrganizationActions from "../../actions/OrganizationActions";
 import { isSpeakerTypeOrganization } from "../../utils/organization-functions";
-import SearchAllBox from "../../components/Search/SearchAllBox";
 import VoterGuideActions from "../../actions/VoterGuideActions";
 import VoterSessionActions from "../../actions/VoterSessionActions";
+// import SearchAllBox from "../../components/Search/SearchAllBox";
 
 export default class HeaderBar extends Component {
   static propTypes = {
@@ -30,30 +31,60 @@ export default class HeaderBar extends Component {
     this.hideProfilePopUp = this.hideProfilePopUp.bind(this);
     this.state = {
       aboutMenuOpen: false,
-      profilePopUpOpen: false,
       bookmarks: [],
+      componentDidMountFinished: false,
+      profilePopUpOpen: false,
       friendInvitationsSentToMe: FriendStore.friendInvitationsSentToMe(),
     };
   }
 
   componentDidMount () {
-    this.ballotStoreListener = BallotStore.addListener(this.onBallotStoreChange.bind(this));
+    // this.ballotStoreListener = BallotStore.addListener(this.onBallotStoreChange.bind(this));
     this.bookmarkStoreListener = BookmarkStore.addListener(this.onBallotStoreChange.bind(this));
     this.friendStoreListener = FriendStore.addListener(this._onFriendStoreChange.bind(this));
-    this.onBallotStoreChange();
+    //this.onBallotStoreChange();
 
     // this.props.location &&
     let weVoteBrandingOffFromUrl = this.props.location.query ? this.props.location.query.we_vote_branding_off : 0;
     let weVoteBrandingOffFromCookie = cookies.getItem("we_vote_branding_off");
     this.setState({
+      componentDidMountFinished: true,
       we_vote_branding_off: weVoteBrandingOffFromUrl || weVoteBrandingOffFromCookie,
     });
   }
 
   componentWillUnmount () {
-    this.ballotStoreListener.remove();
+    // this.ballotStoreListener.remove();
     this.bookmarkStoreListener.remove();
     this.friendStoreListener.remove();
+  }
+
+  shouldComponentUpdate (nextProps, nextState) {
+    // This lifecycle method tells the component to NOT render if componentWillReceiveProps didn't see any changes
+    if (this.state.componentDidMountFinished === false) {
+      // console.log("shouldComponentUpdate: componentDidMountFinished === false");
+      return true;
+    }
+    if (this.state.profilePopUpOpen === true || nextState.profilePopUpOpen === true) {
+      // console.log("shouldComponentUpdate: this.state.profilePopUpOpen", this.state.profilePopUpOpen, ", nextState.profilePopUpOpen", nextState.profilePopUpOpen);
+      return true;
+    }
+    if (this.state.aboutMenuOpen === true || nextState.aboutMenuOpen === true) {
+      // console.log("shouldComponentUpdate: this.state.aboutMenuOpen", this.state.aboutMenuOpen, ", nextState.aboutMenuOpen", nextState.aboutMenuOpen);
+      return true;
+    }
+    let currentPathnameExists = this.props.location && this.props.location.pathname;
+    let nextPathnameExists = nextProps.location && nextProps.location.pathname;
+    // One exists, and the other doesn't
+    if (currentPathnameExists && !nextPathnameExists || !currentPathnameExists && nextPathnameExists) {
+      // console.log("shouldComponentUpdate: PathnameExistsDifference");
+      return true;
+    }
+    if (currentPathnameExists && nextPathnameExists && this.props.location.pathname !== nextProps.location.pathname) {
+      // console.log("shouldComponentUpdate: this.props.location.pathname", this.props.location.pathname, ", nextProps.location.pathname", nextProps.location.pathname);
+      return true;
+    }
+    return false;
   }
 
   onBallotStoreChange () {
@@ -67,26 +98,24 @@ export default class HeaderBar extends Component {
   }
 
   static ballot (active) {
-    let icon = "glyphicon glyphicon-list-alt glyphicon-line-adjustment nav-icon";
-
-    return <Link to="/ballot" className={ "header-nav__item--ballot header-nav__item header-nav__item--has-icon" + (active ? " active-icon" : "")}>
-      <span className={icon} title="Ballot" />
+    return <Link to="/ballot" className={"header-nav__item" + (active ? " active-icon" : "")}>
+      <Icon name="nav/ballot-icon-24" color="#ffffff" className={"header-nav__icon--ballot"} />
       <span className="header-nav__label">
         Ballot
-        </span>
+      </span>
     </Link>;
   }
 
   static network (active, numberOfIncomingFriendRequests) {
-    return <Link to="/more/network" className={ "header-nav__item--network header-nav__item header-nav__item--has-icon" + (active ? " active-icon" : "")}>
-      <span title="Network">
-        <img className="glyphicon" src={cordovaDot("/img/global/svg-icons/network-icon.svg")} />
+    return <Link to="/more/network" className={ "header-nav__item" + (active ? " active-icon" : "")}>
+      <div title="Network">
+        <Icon name="nav/network-icon-24" color="#ffffff" className={"header-nav__icon"} />
         {numberOfIncomingFriendRequests ?
           numberOfIncomingFriendRequests < 9 ?
             <span className="badge-total badge footerNav.badge-total">{numberOfIncomingFriendRequests}</span> :
             <span className="badge-total badge-total--overLimit badge">9+</span> :
           null }
-      </span>
+      </div>
       <span className="header-nav__label">
         Network
         </span>
@@ -94,11 +123,11 @@ export default class HeaderBar extends Component {
   }
 
   static donate (active) {
-    return <Link to="/more/donate" className={ "header-nav__item--donate header-nav__item header-nav__item--has-icon hidden-xs" + (active ? " active-icon" : "")}>
-      <img className="glyphicon" src={cordovaDot("/img/global/svg-icons/glyphicons-20-heart-empty.svg")} />
+    return <Link to="/more/donate" className={ "header-nav__item--donate header-nav__item d-none d-sm-block" + (active ? " active-icon" : "")}>
+      <Icon name="nav/donate-icon-24" color="#ffffff" className={"header-nav__icon"} />
       <span className="header-nav__label">
         Donate
-        </span>
+      </span>
     </Link>;
   }
 
@@ -134,9 +163,9 @@ export default class HeaderBar extends Component {
   imagePlaceholder (speakerType) {
     let imagePlaceholderString = "";
     if (isSpeakerTypeOrganization(speakerType)) {
-      imagePlaceholderString = <div id= "anonIcon" className="header-nav__avatar"><Icon name="avatar-generic" width={34} height={34} /></div>;
+      imagePlaceholderString = <div id= "anonIcon" className="header-nav__avatar"><Icon name="avatar-generic" width={34} height={34} color="#c0c0c0" /></div>;
     } else {
-      imagePlaceholderString = <div id= "anonIcon" className="header-nav__avatar"><Icon name="avatar-generic" width={34} height={34} /></div>;
+      imagePlaceholderString = <div id= "anonIcon" className="header-nav__avatar"><Icon name="avatar-generic" width={34} height={34} color="#c0c0c0" /></div>;
     }
 
     return imagePlaceholderString;
@@ -161,22 +190,7 @@ export default class HeaderBar extends Component {
 
     return (
       <header className={ isWebApp() ? "page-header" : "page-header page-header__cordova" }>
-        {!weVoteBrandingOff && isWebApp() &&
-          <span>
-            <Link to="/welcome" className={ "page-logo page-logo-full-size hidden-xs"}>
-              <img src={cordovaDot("/img/global/svg-icons/we-vote-logo-horizontal-color.svg")} />
-            </Link>
-            <span>
-              { showFullNavigation && isWebApp() ?
-                <Link to="/welcome" className="page-logo page-logo-short h4 visible-xs wikiki">
-                  <img className="glyphicon" src={cordovaDot("/img/global/svg-icons/we-vote-icon-square-color.svg")} />
-                </Link> :
-                <Link to="/welcome" className="page-logo page-logo-short h4 visible-xs WAKAKA">
-                  <img className="glyphicon" src={cordovaDot("/img/global/svg-icons/we-vote-icon-square-color.svg")} />
-                </Link>
-              }
-            </span>
-          </span>
+        {!weVoteBrandingOff && isWebApp() && <HeaderBarLogo showFullNavigation={!!showFullNavigation} isBeta />
         }
         <div className="header-nav">
           { showFullNavigation && isWebApp() && HeaderBar.ballot(pathname === "/ballot") }
@@ -186,7 +200,7 @@ export default class HeaderBar extends Component {
           { weVoteBrandingOff || isCordova() ? null :
             <span>
               { showFullNavigation ?
-                <span onClick={this.toggleAboutMenu} className={ "header-nav__item header-nav__item--about header-nav__item--has-icon hidden-xs" + (pathname === "/more/about" ? " active-icon" : "")}>
+                <span onClick={this.toggleAboutMenu} className={ "header-nav__item header-nav__item--about d-none d-sm-block" + (pathname === "/more/about" ? " active-icon" : "")}>
                   <span className="header-nav__icon--about">About</span>
                   <span className="header-nav__label">We Vote</span>
                   <HeaderBarAboutMenu toggleAboutMenu={this.toggleAboutMenu} aboutMenuOpen={this.state.aboutMenuOpen} />
@@ -214,7 +228,7 @@ export default class HeaderBar extends Component {
           }
         </div>
 
-        { (showFullNavigation || isCordova()) && <SearchAllBox /> }
+        {/* (showFullNavigation || isCordova()) && <SearchAllBox /> */}
 
         { showFullNavigation && isWebApp() &&
           <div className="header-nav__avatar-wrapper u-cursor--pointer u-flex-none" onClick={this.toggleProfilePopUp}>
@@ -227,20 +241,19 @@ export default class HeaderBar extends Component {
                  />
             </div> : this.imagePlaceholder(speakerType)
           }
+          {/* Was AccountMenu */}
+          {this.state.profilePopUpOpen &&
+            <HeaderBarProfilePopUp {...this.props}
+                                  onClick={this.toggleProfilePopUp}
+                                  profilePopUpOpen={this.state.profilePopUpOpen}
+                                  bookmarks={this.state.bookmarks}
+                                  weVoteBrandingOff={this.state.we_vote_branding_off}
+                                  toggleProfilePopUp={this.toggleProfilePopUp}
+                                  hideProfilePopUp={this.hideProfilePopUp}
+                                  transitionToYourVoterGuide={this.transitionToYourVoterGuide.bind(this)}
+                                  signOutAndHideProfilePopUp={this.signOutAndHideProfilePopUp.bind(this)} />
+          }
          </div>
-        }
-        {/* Was AccountMenu */}
-        {this.state.profilePopUpOpen && isWebApp() ?
-          <HeaderBarProfilePopUp {...this.props}
-                                 onClick={this.toggleProfilePopUp}
-                                 profilePopUpOpen={this.state.profilePopUpOpen}
-                                 bookmarks={this.state.bookmarks}
-                                 weVoteBrandingOff={this.state.we_vote_branding_off}
-                                 toggleProfilePopUp={this.toggleProfilePopUp}
-                                 hideProfilePopUp={this.hideProfilePopUp}
-                                 transitionToYourVoterGuide={this.transitionToYourVoterGuide.bind(this)}
-                                 signOutAndHideProfilePopUp={this.signOutAndHideProfilePopUp.bind(this)}
-          /> : null
         }
       </header>
     );

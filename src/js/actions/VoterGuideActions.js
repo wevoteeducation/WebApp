@@ -16,8 +16,8 @@ export default {
   },
 
   voterGuidesToFollowRetrieve: function (election_id, search_string, add_voter_guides_not_from_election, start_retrieve_at_this_number = 0) {
-    let maximum_number_to_retrieve = 350; // This needs to match the variable in VoterGuideStore
-    Dispatcher.loadEndpoint("voterGuidesToFollowRetrieve", {
+    let maximum_number_to_retrieve = 50;
+    return Dispatcher.loadEndpoint("voterGuidesToFollowRetrieve", {
       google_civic_election_id: election_id,
       start_retrieve_at_this_number: start_retrieve_at_this_number,
       maximum_number_to_retrieve: maximum_number_to_retrieve,
@@ -81,5 +81,17 @@ export default {
       google_civic_election_id: google_civic_election_id,
       voter_guide_we_vote_id: voter_guide_we_vote_id
     } );
-  }
+  },
+
+  voterGuidesUpcomingRetrieve: function (google_civic_election_id = 0) {
+    // let maximum_number_to_retrieve = 500;
+    let google_civic_election_id_list = [];
+    if (google_civic_election_id !== 0) {
+      google_civic_election_id_list.push(google_civic_election_id);
+    }
+    Dispatcher.loadEndpoint("voterGuidesUpcomingRetrieve", {
+      google_civic_election_id_list: google_civic_election_id_list,
+      // maximum_number_to_retrieve: maximum_number_to_retrieve,
+    });
+  },
 };

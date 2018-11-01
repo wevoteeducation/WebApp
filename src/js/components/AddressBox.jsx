@@ -1,7 +1,6 @@
 /* global google */
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Button } from "react-bootstrap";
 import BallotStore from "../stores/BallotStore";
 import { historyPush } from "../utils/cordovaUtils";
 import { isCordova } from "../utils/cordovaUtils";
@@ -28,6 +27,8 @@ export default class AddressBox extends Component {
       ballotCaveat: "",
     };
 
+    // this.autocomplete = React.createRef();
+
     this.updateVoterAddress = this.updateVoterAddress.bind(this);
     this.voterAddressSave = this.voterAddressSave.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
@@ -48,7 +49,7 @@ export default class AddressBox extends Component {
   componentWillUnmount () {
     this.voterStoreListener.remove();
     this.ballotStoreListener.remove();
-    if (this.googleAutocompleteListener !== undefined){  // Temporary fix until google maps key is fixed.
+    if (this.googleAutocompleteListener !== undefined) {  // Temporary fix until google maps key is fixed.
       this.googleAutocompleteListener.remove();
     } else {
       console.log("Google Maps Error: DeletedApiProjectMapError");
@@ -58,12 +59,12 @@ export default class AddressBox extends Component {
   componentDidUpdate () {
     // If we're in the slide with this component, autofocus the address box, otherwise defocus.
     if (this.props.manualFocus !== undefined) {
-      let address_box = this.refs.autocomplete;
-      if (address_box) {
+      let addressBox = this.refs.autocomplete;
+      if (addressBox) {
         if (this.props.manualFocus) {
-          address_box.focus();
+          addressBox.focus();
         } else {
-          address_box.blur();
+          addressBox.blur();
         }
       }
     }
@@ -88,7 +89,7 @@ export default class AddressBox extends Component {
   onBallotStoreChange () {
     // console.log("AddressBox, onBallotStoreChange, this.state:", this.state);
     this.setState({
-      ballotCaveat: BallotStore.getBallotCaveat()
+      ballotCaveat: BallotStore.getBallotCaveat(),
     });
   }
 
@@ -133,38 +134,46 @@ export default class AddressBox extends Component {
       if (this.props.waitingMessage) {
         waitingMessage = this.props.waitingMessage;
       }
+
       return <div>
             <h2>{waitingMessage}</h2>
             {LoadingWheel}
           </div>;
     }
 
-    return <div>
-        <form onSubmit={this.voterAddressSave}>
+    // TODO: Oct 22, 2018: If you change the following line from "class" to "className" you will get a Cordova app crash for later iPhones with notches
+    // We are just going to have to live with the javascript console warning for now...
+    // ERROR: Warning: Invalid DOM property `class`. Did you mean `className`?
+    // eslint-disable-next-line react/no-unknown-property
+    return <div class="container">
+        <form onSubmit={this.voterAddressSave} className="row">
           <input
             type="text"
             value={this.state.text_for_map_search}
             onKeyDown={this.handleKeyPress}
             onChange={this.updateVoterAddress}
             name="address"
-            className="form-control"
+            className="form-control col-sm-9"
             ref="autocomplete"
             placeholder="Enter address where you are registered to vote"
             autoFocus={!isCordova() && !this.props.disableAutoFocus}
           />
+          <div className="col-sm-3 text-right pr-0 mt-sm-0 mt-3">
+            <button
+              onClick={this.voterAddressSave}
+              className="btn btn-primary">
+              Save</button>
+            <br />
+            { this.props.cancelEditAddress ?
+              <span className="u-f5">
+                <a href="#" onClick={this.props.cancelEditAddress}>cancel</a>
+              </span> :
+              null
+            }
+          </div>
         </form>
-        <div>
-        <br/>
-          <Button
-            className="pull-right"
-            onClick={this.voterAddressSave}
-            bsStyle="primary">
-            Save</Button>
-          { this.props.cancelEditAddress ?
-            <span className="pull-right u-f5 u-push--md"><a href="#" onClick={this.props.cancelEditAddress}>cancel</a> </span> :
-            null }
-        </div>
-      <p/><h4>{this.state.ballotCaveat}</h4>
+        <p />
+        <h4>{this.state.ballotCaveat}</h4>
       </div>;
   }
 }

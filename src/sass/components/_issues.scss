@@ -1,0 +1,149 @@
+// Issue related styles
+
+.issue-icon-list {
+  &__endorsements-label {
+    color: $gray-mid;
+  }
+  &__issue-block {
+    overflow-x: hidden;
+    width: 40px;
+  }
+  &__issue-icon {
+    color: $gray-mid;
+    height: 20px;
+    width: 20px;
+  }
+  &__issue-label-name {
+    color: $gray-mid;
+    font-size: .7rem;
+    // Trying to get name to wrap to two lines
+    //height: 3em; /* height is 2x line-height, so two lines will display */
+    //line-height: 1.5em;
+    //overflow: hidden;  /* prevents extra lines from being visible */
+    //width: 100px;
+  }
+}
+
+.issues-list-stacked {
+  $bar-height: 10px;
+  $icon-size: 20px;
+  position: relative;
+  width: 100%;
+  align-items: center;
+  // flex: 5 0 130px;
+  // min-width: 130px; // flex-basis not being respected (Chrome)
+
+  &__bar {
+    position: absolute;
+    display: block;
+    height: $bar-height;
+    width: 0;
+    transition: width .2s ease-out;
+    box-sizing: content-box;
+  }
+
+  &__info-icon-for-popover {
+    color: $gray-mid;
+  }
+
+  &__support,
+  &__oppose {
+    display: flex;
+    align-items: center;
+    flex: none;
+  }
+
+  &__more-opinions {
+    color: $gray-mid;
+  }
+
+  &__support-score {
+    color: $gray-dark;
+    font-size: 2rem;
+    font-weight: 500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__support-score-label,
+  &__support-label {
+    color: $gray-dark;
+    font-size: .875rem;
+    font-weight: 200;
+    line-height: 1.2;
+    vertical-align: middle;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+
+    @include breakpoints (small mid-small) {
+      font-size: .875rem;
+    }
+  }
+
+  // Issues Display List
+
+  &__support-list {
+    $scrollbar-height: 21px;
+    $list-height: 47px;
+    $list-height-visible: $list-height - $scrollbar-height;
+    $scroll-icon-margin: $space-none $space-sm;
+    $scroll-icon-margin-small: $space-none 13px;
+    $support-list-margin-left: -36px;
+    $support-list-margin-right: -16px;
+    margin-left: $support-list-margin-left;
+    margin-right: $support-list-margin-right;
+
+    &__container-wrap {
+      box-sizing: content-box;
+      overflow: hidden;
+      height: $list-height-visible;
+      flex-grow: 1;
+    }
+
+    &__container {
+      // white-space: nowrap;
+      // overflow-x: scroll; // Oct 2018 Causes problems with popover placement (card-popover related)
+      // overflow-y: hidden; // Oct 2018 Causes problems with popover placement (card-popover related)
+      height: $list-height;
+    }
+
+    &__items {
+      padding: $space-none;
+      margin-bottom: $space-md;
+      list-style: none;
+    }
+
+    &__item {
+      position: relative;
+      display: inline-block;
+      float: none;
+    }
+
+    &__scroll-icon {
+      color: $gray-mid;
+      margin: $scroll-icon-margin;
+      margin-top: $space-xs;
+      @include breakpoints (medium) {
+        margin-top: $space-md;
+      }
+
+      &--small {
+        @include breakpoints (0 medium) {
+          margin-top: $negative-space-sm;
+        }
+      }
+
+      &--disabled {
+        color: $transparent;
+        margin: $scroll-icon-margin;
+      }
+
+      &--disabled-small {
+        color: $transparent;
+        margin: $scroll-icon-margin-small;
+      }
+    }
+  }
+}

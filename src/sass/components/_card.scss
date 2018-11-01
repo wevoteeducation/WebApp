@@ -46,7 +46,7 @@ $candidate-font-size: .875rem;
     &__media-object {
       // additional styling set with 'media-object' mixin
       @include breakpoints (mid-small) {
-        min-width: 320px;
+        min-width: 260px; // Reset to 320px when bsPrefix="card-popover" bug is fixed
       }
     }
 
@@ -68,7 +68,7 @@ $candidate-font-size: .875rem;
     }
 
     &__avatar-compressed {
-      background-image: url('/img/global/svg-icons/avatar-generic.svg');
+      background-image: url('../../img/global/svg-icons/avatar-generic.svg');
       width: 40px;
       border-radius: $radius-xs;
       .card-main & {
@@ -104,6 +104,10 @@ $candidate-font-size: .875rem;
 
     &__candidate-name {
       font-weight: 600;
+    }
+
+    &__candidate-name-link {
+      color: $link-color;
     }
 
     &__candidate-party-description {
@@ -218,6 +222,10 @@ $candidate-font-size: .875rem;
 
     &__ballot-name-item {
       float: left;
+    }
+
+    &__ballot-name-link {
+      color: $link-color;
     }
 
     &__ballot-name {
@@ -400,16 +408,29 @@ $candidate-font-size: .875rem;
   }
 }
 
+// October 2018 There is a problem with bsPrefix="card-popover" -- this code will be used when that is fixed
 .card-popover {
   padding-top: $space-none;
   padding-left: $space-none;
   padding-right: $space-none;
+  background-color: $white;
   max-width: 350px;
   @include breakpoints (max mid-small) {
     max-width: 290px;
   }
 
   &__width--minimum {
+    max-width: 290px; // Remove when bsPrefix="card-popover" bug is fixed
     width: 90vw;
   }
+}
+
+.card-popover-body {
+  max-width: 290px; // Remove when bsPrefix="card-popover" bug is fixed
+  padding: $space-inset-xs;
+}
+
+.card-popover-header {
+  background-color: $brand-blue;
+  color: $white;
 }

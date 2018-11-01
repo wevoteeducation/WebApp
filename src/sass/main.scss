@@ -26,10 +26,6 @@
 // 3. Vendor
 // ===============================================
 
-// * Bootstrap is currently compiled + linked as a separate stylesheet, but should get pulled in here once we do more to customize/integrate styling.
-@import 'vendor/react-bootstrap-toggle';
-
-
 // ===============================================
 // 4. Utility & Helpers
 // ===============================================
@@ -83,6 +79,7 @@
 @import 'components/itemPositionStatementActionBar';
 @import 'components/searchbar'; // move if necessary
 @import 'components/settings';
+@import 'components/bootstrap3LeftBehind';
 
 // -------------------------------
 // Sections
@@ -95,6 +92,7 @@
 @import 'components/footer';
 @import 'components/intro-modal';
 @import 'components/intro-story';
+@import 'components/issues';
 @import 'components/loading-screen';
 @import 'components/modal-content';
 @import 'components/more-tools';
@@ -112,3 +110,9 @@
 
 @import 'overrides/overrides.scss';
 @import 'overrides/print.scss';
+
+// ===============================================
+// 7. If you know a better way, then feel free to change how we pull in these styles
+// ===============================================
+
+@import 'vendor/react-toggle-style';

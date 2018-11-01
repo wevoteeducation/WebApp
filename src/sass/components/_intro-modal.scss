@@ -1,5 +1,6 @@
 // April 2018: Something in our sass processing chain is messing up the utf-8 char in slick-theme.css within Cordova, so force it here.
 $slick-dot-character: '\2022' !default;
+$backdrop-border-radius: 0 0 8px 8px;
 
 .intro-modal {
   padding: $space-none;
@@ -10,7 +11,7 @@ $slick-dot-character: '\2022' !default;
   text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
 
   &__h1 {
     font-weight: 700;
@@ -330,25 +331,21 @@ $slick-dot-character: '\2022' !default;
 
   &__square-name {
     position: absolute;
-    right: 10px;
-    bottom: 10px;
-    left: 10px;
-    font-size: 1rem;
+    left: 2px;
+    bottom: -6px;
+    font-size: .9rem;
     word-wrap: break-word;
     text-shadow: 1px 1px 2px rgba($black, .6);
+    background: rgba(0, 0, 0, .5);
+    padding: $space-xs;
+    width: calc(100% - 4px);
+    border-radius: $backdrop-border-radius;
 
-    @include breakpoints (xsmall-bootstrap small-bootstrap) {
-      right: 8px;
-      bottom: 8px;
-      left: 8px;
-      font-size: .9rem;
+    @include breakpoints (mid-small xsmall-bootstrap) {
+      padding: $space-sm;
     }
 
     @include breakpoints (iphone5 mid-small) {
-      right: 10px;
-      bottom: 10px;
-      left: 10px;
-      font-size: .9rem;
       -webkit-hyphens: auto;
       -moz-hyphens: auto;
       -ms-hyphens: auto;
@@ -356,9 +353,6 @@ $slick-dot-character: '\2022' !default;
     }
 
     @include breakpoints (max iphone5) {
-      right: 8px;
-      bottom: 8px;
-      left: 8px;
       font-size: .85rem;
       -webkit-hyphens: auto;
       -moz-hyphens: auto;
@@ -503,6 +497,10 @@ $slick-dot-character: '\2022' !default;
   height: 100%;
 }
 
+.slick-slide > div { // stylelint-disable-line selector-max-type
+  height: 100%;
+}
+
 .slick-dots {
   bottom: 0;
   content: $slick-dot-character;
@@ -620,6 +618,10 @@ $slick-dot-character: '\2022' !default;
 
   &__span--right {
     text-align: right;
+  }
+
+  &__iphone-xr-xs {
+    margin-right: $space-none;
   }
 
   &-vertical-scroll-contain { // There is also intro-modal-vertical-scroll-contain (CSS needs to be cleaned up)

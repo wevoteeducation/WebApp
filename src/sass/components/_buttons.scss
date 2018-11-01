@@ -1,6 +1,5 @@
+// Social button customizations (on About page)
 
-
-// Social button cusotmizations (on About page)
 .btn--email {
   $email-btn-color: #f0ad4e;
   $email-btn-border-color: darken($email-btn-color, 15%);
@@ -18,7 +17,7 @@
 }
 
 .btn--medium {
-  border-color: $gray-mid;
+  border-color: $gray-border;
 }
 
 // For icons on buttons
@@ -32,4 +31,10 @@
 .btn_donate {
   margin-bottom: $space-sm;
   margin-right: $space-sm;
+}
+
+.btn_ballot_filter {
+  background-color: $white;
+  border-color: $gray-border;
+  color: $black;
 }

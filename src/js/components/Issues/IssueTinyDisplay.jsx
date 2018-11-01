@@ -5,7 +5,7 @@ import { isCordova } from "../../utils/cordovaUtils";
 import FollowToggle from "../Widgets/FollowToggle";
 import ImageHandler from "../../components/ImageHandler";
 import IssueCard from "./IssueCard";
-import IssueImageDisplay from "./IssueImageDisplay";
+import IssueImageDisplay from "../../components/Issues/IssueImageDisplay";
 import IssueStore from "../../stores/IssueStore";
 import ReadMore from "../../components/Widgets/ReadMore";
 import VoterGuideStore from "../../stores/VoterGuideStore";
@@ -23,7 +23,6 @@ export default class IssueTinyDisplay extends Component {
     popoverBottom: PropTypes.bool,
     toFollow: PropTypes.bool,
     urlWithoutHash: PropTypes.string,
-    we_vote_id: PropTypes.string
   };
 
   constructor (props) {
@@ -123,6 +122,7 @@ export default class IssueTinyDisplay extends Component {
   }
 
   render () {
+    // console.log("IssueTinyDisplay");
     renderLog(__filename);
     // console.log("IssueTinyDisplay render, issue_we_vote_id: ", this.state.issue_we_vote_id, ", this.state.voter_guides_for_this_issue: ", this.state.voter_guides_for_this_issue);
     if (!this.state.voter_guides_for_this_issue || !this.state.voter_guides_for_this_issue.length){
@@ -157,8 +157,8 @@ export default class IssueTinyDisplay extends Component {
         <div className="card-child__additional">
           <div className="card-child__follow-buttons">
             <FollowToggle currentBallotIdInUrl={this.props.currentBallotIdInUrl}
-                          office_we_vote_id={this.props.we_vote_id}
-                          we_vote_id={organization_we_vote_id}
+                          ballotItemWeVoteId={this.props.ballotItemWeVoteId}
+                          organizationWeVoteId={organization_we_vote_id}
                           urlWithoutHash={this.props.urlWithoutHash}
              />
           </div>
@@ -168,10 +168,11 @@ export default class IssueTinyDisplay extends Component {
 
     this.popover_state[this.props.issue_we_vote_id] = { show: false, timer: null };
 
+    // Removed bsPrefix="card-popover"
     let issuePopover = <Popover id={`issue-popover-${this.props.issue_we_vote_id}`}
                                 onMouseOver={() => this.onTriggerEnter(this.props.issue_we_vote_id)}
                                 onMouseOut={() => this.onTriggerLeave(this.props.issue_we_vote_id)}
-                                className="card-popover" title={<span onClick={() => this.onTriggerLeave(this.props.issue_we_vote_id)}> &nbsp;
+                                title={<span onClick={() => this.onTriggerLeave(this.props.issue_we_vote_id)}> &nbsp;
                                   <span className={`fa fa-times pull-right u-cursor--pointer ${isCordova() && "u-mobile-x"} `} aria-hidden="true" /> </span>}
                                 >
         <IssueCard ballotItemWeVoteId={this.props.ballotItemWeVoteId}
@@ -180,7 +181,6 @@ export default class IssueTinyDisplay extends Component {
                    issue={this.props.issue}
                    issueImageSize={"MEDIUM"}
                    urlWithoutHash={this.props.urlWithoutHash}
-                   we_vote_id={this.props.we_vote_id}
         />
         <span className="guidelist card-child__list-group">
           {organizations_not_shown_display}
@@ -189,13 +189,14 @@ export default class IssueTinyDisplay extends Component {
 
     // onClick={(e) => this.onTriggerToggle(e, this.props.issue_we_vote_id)}
 
+    // onMouseOver={() => this.onTriggerEnter(this.props.issue_we_vote_id)}
+    // onMouseOut={() => this.onTriggerLeave(this.props.issue_we_vote_id)}
+    // onExiting={() => this.onTriggerLeave(this.props.issue_we_vote_id)}
+    // trigger={this.props.overlayTriggerOnClickOnly ? "click" : ["focus", "hover", "click"]}
     return <OverlayTrigger ref={`issue-overlay-${this.props.issue_we_vote_id}`}
-                           onMouseOver={() => this.onTriggerEnter(this.props.issue_we_vote_id)}
-                           onMouseOut={() => this.onTriggerLeave(this.props.issue_we_vote_id)}
-                           onExiting={() => this.onTriggerLeave(this.props.issue_we_vote_id)}
-                           trigger={this.props.overlayTriggerOnClickOnly ? "click" : ["focus", "hover", "click"]}
                            rootClose
                            placement={this.props.popoverBottom ? "bottom" : "top"}
+                           trigger="click"
                            overlay={issuePopover}
             >
       <span className="">

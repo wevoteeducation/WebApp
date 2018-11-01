@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Button } from "react-bootstrap";
+import { historyPush } from "../../utils/cordovaUtils";
 import VoterGuideStore from "../../stores/VoterGuideStore";
 import { renderLog } from "../../utils/logging";
 import OrganizationActions from "../../actions/OrganizationActions";
@@ -8,27 +9,27 @@ import OrganizationStore from "../../stores/OrganizationStore";
 import OrganizationTinyDisplay from "../VoterGuide/OrganizationTinyDisplay";
 import { showToastError, showToastSuccess } from "../../utils/showToast";
 import VoterStore from "../../stores/VoterStore";
-import { historyPush } from "../../utils/cordovaUtils";
 
 export default class FollowToggle extends Component {
   static propTypes = {
     classNameOverride: PropTypes.string,
     currentBallotIdInUrl: PropTypes.string,
     hide_stop_following_button: PropTypes.bool,
-    office_we_vote_id: PropTypes.string,
+    ballotItemWeVoteId: PropTypes.string,
     organization_for_display: PropTypes.object,
     opposesThisBallotItem: PropTypes.bool,
     supportsThisBallotItem: PropTypes.bool,
     urlWithoutHash: PropTypes.string,
-    we_vote_id: PropTypes.string.isRequired,
+    organizationWeVoteId: PropTypes.string.isRequired,
   };
 
   constructor (props) {
     super(props);
     this.state = {
+      componentDidMountFinished: false,
       voter: {
         we_vote_id: "",
-      }
+      },
     };
 
     this.followInstantly = this.followInstantly.bind(this);
@@ -38,10 +39,12 @@ export default class FollowToggle extends Component {
   componentDidMount () {
     // console.log("componentDidMount, this.props: ", this.props);
     this.setState({
-      is_following: OrganizationStore.isVoterFollowingThisOrganization(this.props.we_vote_id),
-      organization: OrganizationStore.getOrganizationByWeVoteId(this.props.we_vote_id),
+      componentDidMountFinished: true,
+      is_following: OrganizationStore.isVoterFollowingThisOrganization(this.props.organizationWeVoteId),
+      organization: OrganizationStore.getOrganizationByWeVoteId(this.props.organizationWeVoteId),
     });
     this._onVoterStoreChange();
+
     // We need the voterGuideStoreListener until we take the follow functions out of OrganizationActions and VoterGuideStore
     this.voterGuideStoreListener = VoterGuideStore.addListener(this.onVoterGuideStoreChange.bind(this));
     this.organizationStoreListener = OrganizationStore.addListener(this._onOrganizationStoreChange.bind(this));
@@ -49,25 +52,39 @@ export default class FollowToggle extends Component {
   }
 
   componentWillUnmount () {
-    // console.log("componentWillUnmount, this.props.we_vote_id: ", this.props.we_vote_id);
+    // console.log("componentWillUnmount, this.props.organizationWeVoteId: ", this.props.organizationWeVoteId);
     this.voterGuideStoreListener.remove();
     this.organizationStoreListener.remove();
     this.voterStoreListener.remove();
   }
 
+  shouldComponentUpdate (nextProps, nextState) {
+    // This lifecycle method tells the component to NOT render if componentWillReceiveProps didn't see any changes
+    if (this.state.componentDidMountFinished === false) {
+      // console.log("shouldComponentUpdate: componentDidMountFinished === false");
+      return true;
+    }
+
+    if (this.state.is_following !== nextState.is_following) {
+      // console.log("shouldComponentUpdate: this.state.showBallotIntroFollowIssues", this.state.showBallotIntroFollowIssues, ", nextState.showBallotIntroFollowIssues", nextState.showBallotIntroFollowIssues);
+      return true;
+    }
+    return false;
+  }
+
   onVoterGuideStoreChange () {
-    // console.log("FollowToggle, onVoterGuideStoreChange, organization_we_vote_id: ", this.props.we_vote_id);
+    // console.log("FollowToggle, onVoterGuideStoreChange, organization_we_vote_id: ", this.props.organizationWeVoteId);
     this.setState({
-      is_following: OrganizationStore.isVoterFollowingThisOrganization(this.props.we_vote_id),
-      organization: OrganizationStore.getOrganizationByWeVoteId(this.props.we_vote_id),
+      is_following: OrganizationStore.isVoterFollowingThisOrganization(this.props.organizationWeVoteId),
+      organization: OrganizationStore.getOrganizationByWeVoteId(this.props.organizationWeVoteId),
     });
   }
 
   _onOrganizationStoreChange () {
-    // console.log("FollowToggle, _onOrganizationStoreChange, organization_we_vote_id: ", this.props.we_vote_id);
+    // console.log("FollowToggle, _onOrganizationStoreChange, organization_we_vote_id: ", this.props.organizationWeVoteId);
     this.setState({
-      is_following: OrganizationStore.isVoterFollowingThisOrganization(this.props.we_vote_id),
-      organization: OrganizationStore.getOrganizationByWeVoteId(this.props.we_vote_id),
+      is_following: OrganizationStore.isVoterFollowingThisOrganization(this.props.organizationWeVoteId),
+      organization: OrganizationStore.getOrganizationByWeVoteId(this.props.organizationWeVoteId),
     });
   }
 
@@ -83,55 +100,66 @@ export default class FollowToggle extends Component {
     this.setState({ is_following: false });
   }
 
-  stopFollowingInstantly (stopFollowingFunc, currentBallotIdInUrl, urlWithoutHash, office_we_vote_id) {
-      if (currentBallotIdInUrl && urlWithoutHash && urlWithoutHash) {
-        if (currentBallotIdInUrl !== office_we_vote_id) {
-          historyPush(this.props.urlWithoutHash + "#" + this.props.office_we_vote_id);
-       }
+  stopFollowingInstantly (stopFollowingFunc, currentBallotIdInUrl, urlWithoutHash, ballotItemWeVoteId) {
+    if (currentBallotIdInUrl && urlWithoutHash && urlWithoutHash) {
+      if (currentBallotIdInUrl !== ballotItemWeVoteId) {
+        historyPush(this.props.urlWithoutHash + "#" + this.props.ballotItemWeVoteId);
       }
-      let toast_message = "You'veIstopped listening to this organization's opinions.";
-      // We use this.state.organization instead of this.props.organization_for_display on purpose - there is some weird behavior to be debugged
-      if (this.state.organization && this.state.organization.organization_name) {
-        let organization_name = this.state.organization.organization_name;
-        toast_message = "You've stopped listening to " + organization_name + "'s opinions!";
-      }
-      stopFollowingFunc();
-      showToastError(toast_message);
-      this.stopFollowingLocalState();
+    }
+
+    let toastMessage = "You've stopped listening to this organization's opinions.";
+
+    // We use this.state.organization instead of this.props.organization_for_display on purpose - there is some weird behavior to be debugged
+    if (this.state.organization && this.state.organization.organization_name) {
+      let organizationName = this.state.organization.organization_name;
+      toastMessage = "You've stopped listening to " + organizationName + "'s opinions!";
+    }
+
+    stopFollowingFunc();
+    showToastError(toastMessage);
+    this.stopFollowingLocalState();
   }
 
-  followInstantly (followFunc, currentBallotIdInUrl, urlWithoutHash, office_we_vote_id) {
-      if (currentBallotIdInUrl && urlWithoutHash && urlWithoutHash) {
-        if (currentBallotIdInUrl !== office_we_vote_id) {
-          historyPush(this.props.urlWithoutHash + "#" + this.props.office_we_vote_id);
-       }
+  followInstantly (followFunc, currentBallotIdInUrl, urlWithoutHash, ballotItemWeVoteId) {
+    if (currentBallotIdInUrl && urlWithoutHash && urlWithoutHash) {
+      if (currentBallotIdInUrl !== ballotItemWeVoteId) {
+        historyPush(this.props.urlWithoutHash + "#" + this.props.ballotItemWeVoteId);
       }
-      let toast_message = "Now listening to this organization's opinions!";
-      // We use this.state.organization instead of this.props.organization_for_display on purpose - there is some weird behavior to be debugged
-      if (this.state.organization && this.state.organization.organization_name) {
-        let organization_name = this.state.organization.organization_name;
-        toast_message = "Now listening to " + organization_name + "'s opinions!";
-      }
-      followFunc();
-      showToastSuccess(toast_message);
-      this.startFollowingLocalState();
+    }
+
+    let toastMessage = "Now listening to this organization's opinions!";
+
+    // We use this.state.organization instead of this.props.organization_for_display on purpose - there is some weird behavior to be debugged
+    if (this.state.organization && this.state.organization.organization_name) {
+      let organizationName = this.state.organization.organization_name;
+      toastMessage = "Now listening to " + organizationName + "'s opinions!";
+    }
+
+    followFunc();
+    showToastSuccess(toastMessage);
+    this.startFollowingLocalState();
   }
 
   render () {
+    // console.log("FollowToggle render");
     renderLog(__filename);
     if (!this.state) { return <div />; }
-    let { we_vote_id, organization_for_display } = this.props;
-    let classNameOverride = this.props.classNameOverride || "";
-    let is_looking_at_self = this.state.voter.linked_organization_we_vote_id === we_vote_id;
+
+    let { organizationWeVoteId: weVoteId, organization_for_display: organizationForDisplay } = this.props;
+    // let classNameOverride = this.props.classNameOverride || "";
+    let isLookingAtSelf = this.state.voter.linked_organization_we_vote_id === weVoteId;
+
     // You should not be able to follow yourself
-    if (is_looking_at_self) { return <div />; }
-    let { currentBallotIdInUrl, urlWithoutHash, office_we_vote_id } = this.props;
-    const followFunc = OrganizationActions.organizationFollow.bind(this, we_vote_id);
-    const stopFollowingFunc = OrganizationActions.organizationStopFollowing.bind(this, we_vote_id);
+    if (isLookingAtSelf) { return <div />; }
+
+    let { currentBallotIdInUrl, urlWithoutHash, ballotItemWeVoteId } = this.props;
+    const followFunc = OrganizationActions.organizationFollow.bind(this, weVoteId);
+    const stopFollowingFunc = OrganizationActions.organizationStopFollowing.bind(this, weVoteId);
+
     // NOTE: We want to leave this as showing only if this.props.organization_for_display comes in
-    if (organization_for_display) {
-      return <span onClick={()=>this.followInstantly(followFunc, currentBallotIdInUrl, urlWithoutHash, office_we_vote_id)}>
-        <OrganizationTinyDisplay {...organization_for_display}
+    if (organizationForDisplay) {
+      return <span onClick={()=>this.followInstantly(followFunc, currentBallotIdInUrl, urlWithoutHash, ballotItemWeVoteId)}>
+        <OrganizationTinyDisplay {...organizationForDisplay}
                                  showPlaceholderImage
                                  toFollow
                                  showSupport={this.props.supportsThisBallotItem}
@@ -140,23 +168,20 @@ export default class FollowToggle extends Component {
     }
 
     return this.state.is_following ?
-      <span className="hidden-print">
+      <span className="d-print-none">
         { this.props.hide_stop_following_button ?
           null :
-          <Button bsStyle="warning"
-                  bsSize="small"
-                  className={classNameOverride.length ? classNameOverride : "pull-right"}
-                  onClick={()=>this.stopFollowingInstantly(stopFollowingFunc, currentBallotIdInUrl, urlWithoutHash, office_we_vote_id)}>
-            <span>Listening</span>
+          <Button variant="warning"
+                  size="sm"
+                  onClick={()=>this.stopFollowingInstantly(stopFollowingFunc, currentBallotIdInUrl, urlWithoutHash, ballotItemWeVoteId)}>
+            Listening
           </Button>
         }
       </span> :
-      <span className="hidden-print">
-        <Button bsStyle="success"
-                bsSize="small"
-                className={classNameOverride.length ? classNameOverride : "pull-right"}
-                onClick={()=>this.followInstantly(followFunc, currentBallotIdInUrl, urlWithoutHash, office_we_vote_id)}>
-          <span>Listen</span>
+      <span className="d-print-none">
+        <Button variant="success" size="sm"
+                onClick={()=>this.followInstantly(followFunc, currentBallotIdInUrl, urlWithoutHash, ballotItemWeVoteId)}>
+          Listen
         </Button>
       </span>;
   }

@@ -120,6 +120,7 @@ class MeasureStore extends ReduceStore {
           // console.log("exiting MeasureStore voterGuidesToFollowRetrieve");
           return state;
         }
+        // If here, then this is a call specifically for the voter guides related to one measure
         all_cached_positions_about_measures = state.all_cached_positions_about_measures;
         voter_guides.forEach( one_voter_guide => {
           // Make sure we have a position in the voter guide
@@ -172,6 +173,10 @@ class MeasureStore extends ReduceStore {
           ...state,
           all_cached_positions_about_measures: all_cached_positions_about_measures,
         };
+
+      // case "voterGuidesUpcomingRetrieve":
+      //   // This code harvests the positions that are passed in along with voter guides
+      // DALE 2018-10-16 We could add code here to populate this store - the pattern for voterGuidesToFollowRetrieve isn't right for voterGuidesUpcomingRetrieve though
 
       case "error-measureRetrieve" || "error-positionListForBallotItem":
         console.log(action);

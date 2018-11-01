@@ -1,6 +1,7 @@
 // This file is flooded with non-camel case, so don't flag for now, in order to find more important issues
 // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
 import React, { Component } from "react";
+import { Button } from "react-bootstrap";
 import PropTypes from "prop-types";
 import ReactPlayer from "react-player";
 import Icon from "react-svg-icons";
@@ -49,7 +50,7 @@ export default class ItemPositionStatementActionBar extends Component {
         supportProps: this.props.supportProps,
       });
     }
-    if (this.props.shouldFocus && this.textarea){
+    if (this.props.shouldFocus && this.textarea) {
       this.textarea.focus();
     }
 
@@ -62,7 +63,7 @@ export default class ItemPositionStatementActionBar extends Component {
     this.supportStoreListener = SupportStore.addListener(this.onSupportStoreChange.bind(this));
     this.voterStoreListener = VoterStore.addListener(this._onVoterStoreChange.bind(this));
   }
-  
+
   componentWillReceiveProps (nextProps) {
     if (nextProps.supportProps !== undefined) {
       this.setState({
@@ -89,13 +90,13 @@ export default class ItemPositionStatementActionBar extends Component {
 
   componentDidUpdate (prevProps) {
     if (this.textarea && prevProps.supportProps && this.state.supportProps) {
-      if (prevProps.supportProps.is_oppose === true && this.state.supportProps.is_support === true){  //oppose to support
+      if (prevProps.supportProps.is_oppose === true && this.state.supportProps.is_support === true) {  //oppose to support
         this.textarea.focus();
-      } else if (prevProps.supportProps.is_support === true && this.state.supportProps.is_oppose === true){ //support to oppose
+      } else if (prevProps.supportProps.is_support === true && this.state.supportProps.is_oppose === true) { //support to oppose
         this.textarea.focus();
-      } else if (prevProps.supportProps.is_oppose === false && prevProps.supportProps.is_support === false && this.state.supportProps.is_support === true){ //comment to support
+      } else if (prevProps.supportProps.is_oppose === false && prevProps.supportProps.is_support === false && this.state.supportProps.is_support === true) { //comment to support
         this.textarea.focus();
-      } else if (prevProps.supportProps.is_oppose === false && prevProps.supportProps.is_support === false && this.state.supportProps.is_oppose === true){ //comment to oppose
+      } else if (prevProps.supportProps.is_oppose === false && prevProps.supportProps.is_support === false && this.state.supportProps.is_oppose === true) { //comment to oppose
         this.textarea.focus();
       }
     }
@@ -196,13 +197,13 @@ export default class ItemPositionStatementActionBar extends Component {
 
     // Currently this "Post" text is the same given we display the visibility setting, but we may want to change this
     //  here if the near by visibility setting text changes
-    let post_button_text = "Save";
+    let postButtonText = "Save";
     if (this.state.voterIsSignedIn) {
-      post_button_text = "Post";
+      postButtonText = "Post";
     }
 
     // if (is_public_position) {
-    //   post_button_text = <span>Post</span>;
+    //   postButtonText = <span>Post</span>;
     // }
 
     let speaker_image_url_https = voter_photo_url_medium;
@@ -211,9 +212,9 @@ export default class ItemPositionStatementActionBar extends Component {
     let image_placeholder = "";
     let speaker_type = "V";  // TODO DALE make this dynamic
     if (isSpeakerTypeOrganization(speaker_type)) {
-      image_placeholder = <span className="position-statement__avatar"><Icon name="avatar-generic" width={34} height={34} /></span>;
+      image_placeholder = <span className="position-statement__avatar"><Icon name="avatar-generic" width={34} height={34} color="#c0c0c0" /></span>;
     } else {
-      image_placeholder = <span className="position-statement__avatar"><Icon name="avatar-generic" width={34} height={34} /></span>;
+      image_placeholder = <span className="position-statement__avatar"><Icon name="avatar-generic" width={34} height={34} color="#c0c0c0"/></span>;
     }
 
     // The short version can be used to cut-off an exceedingly long comment. This applies to entries by the viewer,
@@ -250,11 +251,12 @@ export default class ItemPositionStatementActionBar extends Component {
       statement_text_no_url = statement_text_to_be_saved.replace(video_url, "");
     }
 
-    return <div className={ this.props.shown_in_list ? "position-statement__container__in-list" : "position-statement__container"}>
+    // eslint-disable-next-line react/no-unknown-property
+    return <div class={ this.props.shown_in_list ? "position-statement__container__in-list" : "position-statement__container"}>
       { // Show the edit box (Viewing self)
         edit_mode ?
           <form onSubmit={this.savePositionStatement.bind(this)}>
-            <div className="position-statement hidden-print">
+            <div className="position-statement d-print-block">
               { speaker_image_url_https ?
                 <img className="position-statement__avatar"
                      src={speaker_image_url_https}
@@ -273,8 +275,8 @@ export default class ItemPositionStatementActionBar extends Component {
                   <PositionPublicToggle ballot_item_we_vote_id={this.props.ballot_item_we_vote_id}
                                         type={this.props.type}
                                         supportProps={this.props.supportProps}
-                                        className="u-flex-auto u-tr hidden-print" />
-                  <button className="position-statement__post-button btn btn-default btn-sm" type="submit">{post_button_text}</button>
+                                        className="u-flex-auto u-tr d-print-block" />
+                  <Button variant="outline-secondary" size="sm" type="submit">{postButtonText}</Button>
                 </div>
               </span>
             </div>
@@ -316,7 +318,7 @@ export default class ItemPositionStatementActionBar extends Component {
               <PositionPublicToggle ballot_item_we_vote_id={this.props.ballot_item_we_vote_id}
                                     type={this.props.type}
                                     supportProps={this.props.supportProps}
-                                    className="u-flex-auto u-tr hidden-print" />
+                                    className="u-flex-auto u-tr d-print-block" />
             </div>
           </div>
         </div>

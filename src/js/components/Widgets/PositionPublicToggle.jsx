@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Modal, Tooltip, OverlayTrigger } from "react-bootstrap";
-import ReactBootstrapToggle from "react-bootstrap-toggle";
+import Toggle from "react-toggle";
 import Icon from "react-svg-icons";
 import { renderLog } from "../../utils/logging";
+import { hasIPhoneNotch } from "../../utils/cordovaUtils";
 import { showToastSuccess } from "../../utils/showToast";
 import SettingsAccount from "../../components/Settings/SettingsAccount";
 import SupportActions from "../../actions/SupportActions";
@@ -55,6 +56,7 @@ export default class PositionPublicToggle extends Component {
     this.setState({
       showToThePublicOn: false,
     });
+
     // console.log("PositionPublicToggle-showItemToFriendsOnly, this.props.type:", this.props.type);
     SupportActions.voterPositionVisibilitySave(this.props.ballot_item_we_vote_id, this.props.type, "FRIENDS_ONLY");
     showToastSuccess("Position now visible to friends only!");
@@ -62,6 +64,7 @@ export default class PositionPublicToggle extends Component {
 
   showItemToPublic () {
     let voter = this.state.voter;
+
     // console.log("PositionPublicToggle-showItemToPublic, this.props.type:", this.props.type);
     if (voter && voter.is_signed_in) {
       this.setState({
@@ -119,8 +122,8 @@ export default class PositionPublicToggle extends Component {
     let { is_public_position: isPublicPosition } = this.props.supportProps;
     let visibilityPublic = "Currently visible to public";
     let visibilityFriendsOnly = "Currently only shared with We Vote friends";
-    const publicIcon = <Icon alt="Visible to Public" name="public-icon" color="#fff" width={18} height={18} />;
-    const friendsIcon = <Icon alt="Visible to Friends Only" name="group-icon" color="#555" width={18} height={18} />;
+    const publicIcon = <Icon alt="Visible to Public" name="public-icon" color="#000" width={18} height={18} />;
+    const friendsIcon = <Icon alt="Visible to Friends Only" name="group-icon" color="#fff" width={18} height={18} />;
     let tooltip = <Tooltip id="visibility-tooltip">{isPublicPosition ? visibilityPublic : visibilityFriendsOnly}</Tooltip>;
     let noTooltip = <span />;
 
@@ -159,79 +162,82 @@ export default class PositionPublicToggle extends Component {
     // This modal is shown when the user clicks on public position toggle either when not signed in
     // or for the first time after being signed in.
     let voter = this.state.voter;
+    let localModalStyle = hasIPhoneNotch() ? { marginTop: 20 } : {};
     let modalSupportProps = { isPublicPosition: false };
-    const PositionPublicToggleHelpModal = <Modal show={this.state.showPositionPublicHelpModal}
+    const PositionPublicToggleHelpModal =
+      <Modal show={this.state.showPositionPublicHelpModal}
                                                  enforceFocus={false}
-                                                 onHide={()=> { this.togglePositionPublicHelpModal(); }} >
+                                                 onHide={()=> { this.togglePositionPublicHelpModal(); }}>
 
-      <Modal.Header closeButton>
-        <Modal.Title>
-          <div className="text-center">Make Your Positions Public</div>
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <section className="card">
-          <div className="text-center">
-            {voter && voter.is_signed_in ?
-              <div>
-                <div className="u-f2">You have just made your position visible to anyone on We Vote.</div>
-                <div className="u-f4">If you do NOT want to share your position publicly, click the toggle again to restrict visibility to We Vote friends only.</div>
-              </div> :
-              <div>
-                { !this.state.voter.is_signed_in ?
-                  <SettingsAccount /> :
-                  null }
-              </div>}
-            <br />
-            We Vote makes it easy to share your views either publicly, or privately with your We Vote friends.<br />
-            <br />
-            Test the privacy toggle here:<br />
-            <br />
-            <PositionPublicToggle ballot_item_we_vote_id="null"
-                                  className="null"
-                                  type="MEASURE"
-                                  supportProps={modalSupportProps}
-                                  inTestMode
-            />
-            {this.state.positionPublicToggleCurrentState}
-            <br />
-          </div>
-        </section>
-      </Modal.Body>
-    </Modal>;
+        <Modal.Header closeButton style={ localModalStyle }>
+          <Modal.Title>
+            <div className="text-center">Make Your Positions Public</div>
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <section className="card">
+            <div className="text-center">
+              {voter && voter.is_signed_in ?
+                <div>
+                  <div className="u-f2">You have just made your position visible to anyone on We Vote.</div>
+                  <div className="u-f4">If you do NOT want to share your position publicly, click the toggle again to restrict visibility to We Vote friends only.</div>
+                </div> :
+                <div>
+                  { !this.state.voter.is_signed_in ?
+                    <SettingsAccount /> :
+                    null }
+                </div>
+              }
+              <br />
+              We Vote makes it easy to share your views either publicly, or privately with your We Vote friends.<br />
+              <br />
+              Test the privacy toggle here:<br />
+              <br />
+              <PositionPublicToggle ballot_item_we_vote_id="null"
+                                    className="null"
+                                    type="MEASURE"
+                                    supportProps={modalSupportProps}
+                                    inTestMode
+              />
+              {this.state.positionPublicToggleCurrentState}
+              <br />
+            </div>
+          </section>
+        </Modal.Body>
+      </Modal>;
 
     return <div className={this.props.className}>
       <div style={{ display: "inline-block" }}>
         {/* Mobile Mode */}
-        <span className="visible-xs">
+        <span className="d-block d-sm-none">
           <div tabIndex="0" onKeyDown={onKeyDown}>{/* tabIndex and onKeyDown are for accessibility */}
-            <ReactBootstrapToggle on={publicIcon}
-                                  off={friendsIcon}
-                                  onChange={onChange}
-                                  active={this.state.showToThePublicOn}
-                                  onstyle="success"
-                                  size="mini"
-                                  width="40px"
-                                  />
+            <Toggle
+              defaultChecked={this.state.showToThePublicOn}
+              className="toggle-override"
+              icons={{
+                checked: publicIcon,
+                unchecked: friendsIcon,
+              }}
+              onChange={onChange} />
           </div>
         </span>
 
         {/* Desktop Mode */}
-        <span className="hidden-xs">
+        <span className="d-none d-sm-block">
           <OverlayTrigger className="trigger"
                           enforceFocus={false}
                           placement="top"
                           overlay={inTestMode ? noTooltip : tooltip}>
             <div tabIndex="0" onKeyDown={onKeyDown}>{/* tabIndex and onKeyDown are for accessibility */}
-              <ReactBootstrapToggle on={publicIcon}
-                                    off={friendsIcon}
-                                    onChange={onChange}
-                                    active={this.state.showToThePublicOn}
-                                    onstyle="success"
-                                    size="mini"
-                                    width="40px"
-                                    />
-            </div>
+              <Toggle
+                defaultChecked={this.state.showToThePublicOn}
+                className="toggle-override"
+                icons={{
+                  checked: publicIcon,
+                  unchecked: friendsIcon,
+                }}
+                onChange={onChange} />
+              </div>
           </OverlayTrigger>
         </span>
       </div>

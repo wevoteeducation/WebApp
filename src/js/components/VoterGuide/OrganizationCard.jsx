@@ -113,6 +113,7 @@ export default class OrganizationCard extends Component {
   }
 
   render () {
+    // console.log("OrganizationCard render");
     renderLog(__filename);
     if (!this.state.organization_we_vote_id.length) {
       return <div className="card-popover__width--minimum">{LoadingWheel}</div>;
@@ -160,9 +161,9 @@ export default class OrganizationCard extends Component {
           <div className="u-margin-top--md">
             <FollowToggle classNameOverride="pull-left"
                           currentBallotIdInUrl={this.props.currentBallotIdInUrl}
-                          office_we_vote_id={this.props.we_vote_id}
+                          ballotItemWeVoteId={this.props.we_vote_id}
                           urlWithoutHash={this.props.urlWithoutHash}
-                          we_vote_id={this.state.organization_we_vote_id}
+                          organizationWeVoteId={this.state.organization_we_vote_id}
             />
           </div> :
           null }

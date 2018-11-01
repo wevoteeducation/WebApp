@@ -32,7 +32,8 @@ export default class About extends Component {
         <ToolBar hideGitHub />
 
         <div className="u-inset--sm"/>
-        <ReactPlayer url="https://player.vimeo.com/video/121315141" width="300px" height="231px"/>
+        <ReactPlayer url="https://www.youtube.com/embed/s8fGNj_nvWs" width="300px" height="168px"/>
+        {/* <ReactPlayer url="https://player.vimeo.com/video/121315141" width="300px" height="231px"/> */}
         <div className="our-story">
           <h3 className="h3">A Nonprofit Startup</h3>
           <p>
@@ -63,7 +64,7 @@ export default class About extends Component {
                   <div className="media-body">
                     <h4 className="team-member__name"><strong>{item.name}</strong></h4>
                     <p className="team-member__title">{item.title[0]}</p>
-                    <p className="xx-small hidden-xs">{item.title[1]}</p>
+                    <p className="xx-small d-none d-sm-block">{item.title[1]}</p>
                   </div>
                 </div>
               </div>)
@@ -80,7 +81,7 @@ export default class About extends Component {
                   <div className="media-body">
                     <h4 className="team-member__name"><strong>{item.name}</strong></h4>
                     <p className="team-member__title">{item.title[0]}</p>
-                    <p className="xx-small hidden-xs">{item.title[1]}</p>
+                    <p className="xx-small d-none d-sm-block">{item.title[1]}</p>
                   </div>
                 </div>
               </div>)
